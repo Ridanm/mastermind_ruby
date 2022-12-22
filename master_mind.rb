@@ -131,9 +131,7 @@ end
 
 # Refactorizar el código para que el jugador decida si quiere adivinar o elejir 
 # el código secreto de colores 
-
 # si el humano elige los colores el computador debe ser capaz de adivinar, si 
-
 # Si elige modificar las reglas, puede proporcionar a la computadora información
 # adicional sobre cada suposición. Por ejemplo, puede comenzar haciendo que la 
 # computadora adivine al azar, pero mantenga las que coincidan exactamente. 

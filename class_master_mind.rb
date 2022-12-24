@@ -215,6 +215,8 @@ end
     @computer_selected_colors = Array.new 
     @player_selected_colors = Array.new 
     @hits = Array.new 
+    @save_matches = [' ', ' ', ' ', ' '] 
+    @save_hits = [' ', ' ', ' ', ' ']
     @turns = 0
     @guess = ''
     @computer = ComputerChoose.new 
@@ -265,23 +267,28 @@ end
     puts @computer_selected_colors.join(' ')
   end
 
-  def compare_colors 
-    if number.to_i.between?(1, 6)
-
-      if @colors[number.to_i] == @comp_random_colors[ind]
-        #puts "The color: #{colors[number.to_i]} is correct"
-        @hits << 'O'.colorize(:color => :light_black)
-      elsif @comp_random_colors.include?(@colors[number.to_i]) 
-        #puts "The color: #{colors[number.to_i]} is in the wrong place !!!"
-        @hits << 'O'.colorize(:color => :white)
-      else 
-        #puts "The color: #{colors[number.to_i]} is wrong"
-        @hits << ' ' 
+  # 1-Comparamos la primera selección del computador 
+    #   Si coinciden en indíce y color lo agregamos a save_matches
+    #   Le damos retroalimentación de si tuvo alguna coincidencia, 
+    #   Si es así debemos tomar en cuenta dicha coincidencia para,
+    #   el proximo turno.
+  # 2-Comprobamos que no adivinno todos los colores
+  # 3-Retroalimentación tomamos en cuenta los aciertos show_matches,
+        # para generar el próximo código
+  # 4-Computador vuelve a dor otro código de colores hasta adivinar,
+  #     o en su defecto el termino de los turnos 
+  def compare_colors # WORK HERE !!!
+    @computer_selected_colors.each_with_index do |computer_col, ind|
+      @player_selected_colors.each_with_index do |player_col, pos|
+        if ind == pos && player_col == computer_col 
+          @save_matches[ind] = computer_col 
+        end
       end
-
-    else
-      puts "NUMBERS MUST: be between 1 and 6..."
     end
+  end
+
+  def show_hits 
+    puts "SHOW HITS NOT YET: | #{@save_hits.join(' | ')} |"
   end
 
   def winner
@@ -300,6 +307,8 @@ end
     choose_colors
     player_selected_colors
     computer_guess
+    compare_colors
+    show_hits 
     winner 
     loose 
   end

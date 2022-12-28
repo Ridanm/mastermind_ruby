@@ -262,7 +262,7 @@ end
   # para que, si la computadora ha adivinado el color correcto pero en la posición 
   # incorrecta, su siguiente intento tendrá que incluir ese color en alguna parte.
   def computer_guess 
-    print 'COMPUTER GUESS: '
+    print "\nCOMPUTER GUESS: "
     4.times {  @computer_selected_colors <<  @computer.colors[rand(1..6)] }
     puts @computer_selected_colors.join(' ')
   end
@@ -278,12 +278,15 @@ end
   # 4-Computador vuelve a dor otro código de colores hasta adivinar,
   #     o en su defecto el termino de los turnos 
   def compare_colors # WORK HERE !!!
-    @computer_selected_colors.each_with_index do |computer_col, ind|
-      @player_selected_colors.each_with_index do |player_col, pos|
-        if ind == pos && player_col == computer_col 
-          @save_matches[ind] = computer_col 
+    until @turns == 2 
+      @computer_selected_colors.each_with_index do |computer_col, ind|
+        @player_selected_colors.each_with_index do |player_col, pos|
+          if ind == pos && player_col == computer_col 
+            @save_matches[ind] = computer_col 
+          end
         end
       end
+      @turns += 1
     end
   end
 

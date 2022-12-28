@@ -278,7 +278,8 @@ end
   # 4-Computador vuelve a dor otro código de colores hasta adivinar,
   #     o en su defecto el termino de los turnos 
   def compare_colors # WORK HERE !!!
-    until @turns == 2 
+    # until @turns == 2 
+    #   puts "turnos"
       @computer_selected_colors.each_with_index do |computer_col, ind|
         @player_selected_colors.each_with_index do |player_col, pos|
           if ind == pos && player_col == computer_col 
@@ -286,12 +287,12 @@ end
           end
         end
       end
-      @turns += 1
-    end
+    #   @turns += 1
+    # end
   end
 
   def show_hits 
-    puts "SHOW HITS NOT YET: | #{@save_hits.join(' | ')} |"
+    puts "SHOW HITS NOT YET: | #{@save_matches.join(' | ')} |"
   end
 
   def winner

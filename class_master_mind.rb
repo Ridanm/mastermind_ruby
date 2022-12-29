@@ -263,8 +263,9 @@ end
   # incorrecta, su siguiente intento tendrá que incluir ese color en alguna parte.
   def computer_guess 
     print "\nCOMPUTER GUESS: "
-    4.times {  @computer_selected_colors <<  @computer.colors[rand(1..6)] }
+    # 4.times {  @computer_selected_colors <<  @computer.colors[rand(1..6)] }
     puts @computer_selected_colors.join(' ')
+
   end
 
   # 1-Comparamos la primera selección del computador 
@@ -277,18 +278,20 @@ end
         # para generar el próximo código
   # 4-Computador vuelve a dor otro código de colores hasta adivinar,
   #     o en su defecto el termino de los turnos 
-  def compare_colors # WORK HERE !!!
-    # until @turns == 2 
-    #   puts "turnos"
+  def compare_colors # WORK HERE !!! change focus
+    until !@save_matches.include?(' ') || @turns == 3
+      puts "turnos:: #{@turns}"
       @computer_selected_colors.each_with_index do |computer_col, ind|
         @player_selected_colors.each_with_index do |player_col, pos|
           if ind == pos && player_col == computer_col 
-            @save_matches[ind] = computer_col 
+            @save_matches[ind] = 'O'.colorize(:color => :light_black)
+          elsif @player_selected_colors.include?(computer_col) && @save_matches.include?(' ')
+            @save_matches[ind] = 'O'.colorize(:color => :white)
           end
         end
       end
-    #   @turns += 1
-    # end
+      @turns += 1
+    end
   end
 
   def show_hits 
@@ -343,6 +346,11 @@ class Main
     print 'Select number: '
     @choose = gets.chomp.downcase 
 
+    until @choose == "1" || @choose == '2'
+      puts 'Please select 1 to guess code, or 2 to create code'
+      @choose = gets.chomp.downcase 
+    end
+
     if @choose == "1"
       puts 'Computer choose colors...'
       player_guess 
@@ -350,8 +358,8 @@ class Main
       puts 'Player choose colors...'
       computer_guess 
     end
-  end
-end 
+  end 
+end
 
 principal = Main.new 
 principal.choose_player_computer

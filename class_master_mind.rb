@@ -263,9 +263,13 @@ end
   # incorrecta, su siguiente intento tendrá que incluir ese color en alguna parte.
   def computer_guess 
     print "\nCOMPUTER GUESS: "
-    # 4.times {  @computer_selected_colors <<  @computer.colors[rand(1..6)] }
+    #4.times {  @computer_selected_colors <<  @computer.colors[rand(1..6)] }
+    4.times do 
+      print 'Num de prueba: '
+      num = gets.chomp 
+      @computer_selected_colors << @computer.colors[num.to_i]
+    end
     puts @computer_selected_colors.join(' ')
-
   end
 
   # 1-Comparamos la primera selección del computador 
@@ -279,19 +283,21 @@ end
   # 4-Computador vuelve a dor otro código de colores hasta adivinar,
   #     o en su defecto el termino de los turnos 
   def compare_colors # WORK HERE !!! change focus
-    until !@save_matches.include?(' ') || @turns == 3
-      puts "turnos:: #{@turns}"
+    # until !@save_matches.include?(' ') || @turns == 3
+    #   puts "turnos:: #{@turns}"
+      @player_selected_colors.each_with_index do |player_col, pos|
       @computer_selected_colors.each_with_index do |computer_col, ind|
-        @player_selected_colors.each_with_index do |player_col, pos|
-          if ind == pos && player_col == computer_col 
-            @save_matches[ind] = 'O'.colorize(:color => :light_black)
-          elsif @player_selected_colors.include?(computer_col) && @save_matches.include?(' ')
-            @save_matches[ind] = 'O'.colorize(:color => :white)
+
+        if ind == pos && player_col == computer_col 
+          @save_matches[ind] = 'O'.colorize(:color => :light_black)
+        elsif @player_selected_colors.include?(computer_col) && @save_matches.include?(' ')
+          @save_matches[ind] = 'O'.colorize(:color => :cyan)
           end
+
         end
       end
-      @turns += 1
-    end
+    #   @turns += 1
+    # end
   end
 
   def show_hits 

@@ -34,7 +34,7 @@ def colors
   ]
 end
 
-# Mostrar los colores
+# Mostrar los colores 
   def show_colors
       puts @colors.join(' ')
   end

@@ -25,12 +25,12 @@ class ComputerChoose
 def colors 
   @colors = [
     'ALL COLORS IN THE GAME: ',
-    '  1  '.colorize(:color => :white, :background => :red),
-    '  2  '.colorize(:color => :white, :background => :blue),
+    '  1  '.colorize(:color => :black, :background => :red),
+    '  2  '.colorize(:color => :black, :background => :blue),
     '  3  '.colorize(:color => :black, :background => :green),
     '  4  '.colorize(:color => :black, :background => :yellow),
-    '  5  '.colorize(:color => :white, :background => :light_magenta),
-    '  6  '.colorize(:color => :black, :background => :light_cyan)
+    '  5  '.colorize(:color => :black, :background => :magenta),
+    '  6  '.colorize(:color => :black, :background => :cyan)
   ]
 end
 
@@ -91,7 +91,7 @@ end
 # Ingresando código a verificar y restando turnos 
   def guess! 
     print "\nEnter the 4-digit code: "
-    @guess = gets.chomp 
+    @guess = gets.chomp.downcase
   end
 
   def verifier_guess
@@ -194,7 +194,7 @@ end
     reference
     puts 
     computer_random_colors
-    until @turns == 12
+    
       guess!
       turns!
       verifier_guess 
@@ -202,7 +202,6 @@ end
       winner 
       loose 
       play_again
-    end
   end 
 end 
 
@@ -262,14 +261,14 @@ end
   # para que, si la computadora ha adivinado el color correcto pero en la posición 
   # incorrecta, su siguiente intento tendrá que incluir ese color en alguna parte.
   def computer_guess 
-    print "\nCOMPUTER GUESS: "
+    print "\nCOMPUTER GUESS: " #--------WORK HERE NOW----------
     #4.times {  @computer_selected_colors <<  @computer.colors[rand(1..6)] }
-    4.times do 
+    1.times do 
       print 'Num de prueba: '
       num = gets.chomp 
       @computer_selected_colors << @computer.colors[num.to_i]
     end
-    puts @computer_selected_colors.join(' ')
+    puts @computer_selected_colors.class 
   end
 
   # 1-Comparamos la primera selección del computador 

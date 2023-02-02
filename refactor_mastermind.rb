@@ -1,4 +1,4 @@
-# Este es el algoritmo para que el computador adivine el código de 4 dígitos
+# El computador debe adivinar el código de 4 dígitos
 # 1- Crear un código de 4 dígitos creado por el jugador 
 # 2- El computador debe crear un código de 4 dígitos para comparar con el del jugador 
 # 3- Se debe dar retroalimentación de la comparación de los códigos 

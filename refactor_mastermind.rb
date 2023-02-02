@@ -257,6 +257,9 @@ class Presentation
 
   2: Create enter 4 consecutive numbers from 1 to 6,
      each number corresponding to its color.
+     Feedback: O white the number is in the wrong place
+               O black the number and place is correct 
+               space the number is not found
      If you want to quit the game at any time type: exit 
   """
 
@@ -307,7 +310,7 @@ class Main
 
   def player_game
     @player.enter_colors
-    puts "Player:   #{@player.player_colors.join(' ')}"
+    puts "Player:   #{@player.player_colors.join(' ')} >> Feedback: "
     winner(@compare.verifier_guess)
   end
 
@@ -322,18 +325,24 @@ class Main
 
   def play 
     select = ''
-    until select == '1' || select == '2'
+
+    until select == '1' || select == '2' || select == 'exit'
       print "\nEnter number: "
       select = gets.chomp
     end
-
-    if select == '1'
-      puts "\nPlayer: Guess the secret code...
-      Enter 4 consecutive numbers from 1 to 6 to select colors."
-      print 'Colors: '
-      player_game 
-    elsif select == '2'
-      puts 'You must create secret code'
+    
+    if select == 'exit'
+      puts 'Thaks for your visit...'
+      exit
+    else
+      if select == '1'
+        puts "\nPlayer: Guess the secret code...
+        Enter 4 consecutive numbers from 1 to 6 to select colors."
+        print 'Colors: '
+        player_game 
+      elsif select == '2'
+        puts 'You must create secret code'
+      end
     end
   end
 

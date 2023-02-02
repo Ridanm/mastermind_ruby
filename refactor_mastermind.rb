@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 # El computador debe adivinar el código de 4 dígitos
-=======
 #    Mastermind:  para que el computador 
 #    adivine el código de 4 dígitos
 # 1- Player
@@ -45,7 +43,6 @@
 
 
 # Para que el computador adivine el código de 4 dígitos
->>>>>>> movi
 # 1- Crear un código de 4 dígitos creado por el jugador 
 # 2- El computador debe crear un código de 4 dígitos para comparar con el del jugador 
 # 3- Se debe dar retroalimentación de la comparación de los códigos 
@@ -60,6 +57,7 @@
 #    En caso de que todos los colores coincidan hay un ganador. 
 #    En caso de llegar a los 12 turnos y no adivinar: Juego terminado, preguntar si quiere volver a jugar
 #    Si no hay ganador y no llegamos a los 12 turnos volver al paso 4 
+
 require 'colorize'
 
 module Colors 
@@ -261,48 +259,6 @@ class Main
   def initialize(player, computer, compare, feedback) 
     @player = player 
     @computer = computer
-    @compare = compare
-    @feedback = feedback
-    @colors = []
-    @turns = 0
-
-    print "Enter 4 consecutive numbers, \neach number corresponding to its color: "
-    @colors = gets.chomp 
-  end
-end
-
-
-
-class Computer < Player
-  attr_reader :computer_colors 
-  include Colors 
-
-  def initialize
-    computer_colors = Array.new
-  end
-end
-
-
-class CompareGuess
-  def initialize(player, computer) 
-    @player = player 
-    @computer = computer 
-  end
-
-  def verifier_guess(guess)
-    
-  end
-end
-
-
-
-class Main 
-  attr_reader :colors, :player, :computer
-  include Colors 
-
-  def initialize(player, computer, compare, feedback) 
-    @player = player 
-    @computer = computer
     @compare = compare 
     @feedback = feedback 
     @colors = []
@@ -352,9 +308,6 @@ guess_compare = CompareGuess.new(player,computer)
 feedback = Feedback.new(player, computer)
 
 main = Main.new(player, computer, guess_compare, feedback)
-
-player = Player.new
-computer = Computer.new 
 
 main.show_colors
 main.player_game

@@ -62,16 +62,6 @@ require 'colorize'
 
 module Colors 
 
-  HEAD = 'WELCOME TO MASTERMIND'
-
-  MSJ = """
-  The mission: 
-  Gues the secret 4 color code created by the computer...
-  You have 12 turns to crack the seecret code.
-  Enter 4 consecutive numbers from 1 to 6, each number corresponding to its color.
-  If you want to quit the game at any time type: exit 
-  """
-
   COLORS = {
     '1' => '  1  '.colorize(:color => :white, :background => :red),
     '2' => '  2  '.colorize(:color => :white, :background => :blue),
@@ -117,10 +107,6 @@ class Player
   end
 
   def enter_colors
-
-    msj = "\nPLAYER: \n Chosse code to broke \n Enter 4 consecutive numbers, \n each number corresponding to its color: "
-  
-    puts msj
     @colors = gets.chomp
 
     if @colors.size == 4
@@ -251,6 +237,50 @@ class Feedback
 end
 
 
+class Presentation
+
+  include Colors 
+
+  def initialize 
+    @colors = Array.new 
+  end
+
+  HEAD = 'WELCOME TO MASTERMIND'
+
+  MSJ = """
+  In this game you can choose guess the code or create the code 
+  Enter number : 1 to guess the code 
+  or           : 2 to create the code 
+
+  1: Guess the secret 4 color code created by the computer...
+     You have 12 turns to crack the seecret code.
+
+  2: Create enter 4 consecutive numbers from 1 to 6,
+     each number corresponding to its color.
+     If you want to quit the game at any time type: exit 
+  """
+
+  def title(head, msj) 
+    long = head.length * 2
+    puts head.rjust(long)
+    puts msj 
+  end
+
+  def show_colors
+    Colors::COLORS.each do |key, val|
+      @colors << val 
+    end
+    puts "\nReference colors >> #{@colors.join(' ')} <<"
+  end
+
+  def headoard
+    title(HEAD, MSJ) 
+    show_colors
+  end
+
+end
+
+
 class Main 
 
   attr_reader :colors, :player, :computer
@@ -261,14 +291,7 @@ class Main
     @computer = computer
     @compare = compare 
     @feedback = feedback 
-    @colors = []
-  end
-
-  def show_colors
-    Colors::COLORS.each do |key, val|
-      @colors << val 
-    end
-    puts "\n#{@colors.join(' ')}"
+    @colors = Array.new 
   end
 
   def computer_game 
@@ -284,9 +307,7 @@ class Main
 
   def player_game
     @player.enter_colors
-
     puts "Player:   #{@player.player_colors.join(' ')}"
-    puts computer_game
     winner(@compare.verifier_guess)
   end
 
@@ -299,19 +320,32 @@ class Main
     end
   end
 
+  def play 
+    select = ''
+    until select == '1' || select == '2'
+      print "\nEnter number: "
+      select = gets.chomp
+    end
+
+    if select == '1'
+      puts "\nPlayer: Guess the secret code...
+      Enter 4 consecutive numbers from 1 to 6 to select colors."
+      print 'Colors: '
+      player_game 
+    elsif select == '2'
+      puts 'You must create secret code'
+    end
+  end
+
 end
 
 
+presentation = Presentation.new 
 player = Player.new
 computer = Computer.new 
 guess_compare = CompareGuess.new(player,computer)
 feedback = Feedback.new(player, computer)
 
+presentation.headoard
 main = Main.new(player, computer, guess_compare, feedback)
-
-main.show_colors
-main.player_game
-
-
-
-#ColorsGenerator::colors_generator(computer, feedback.feed_colors)
+main.play 

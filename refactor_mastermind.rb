@@ -192,8 +192,8 @@ class CompareGuess
     @feedback_list = Array.new(4, ' ')
   end
 
-  def verifier_guess
-    @player.player_colors == @computer.computer_colors
+  def verifier_guess(to_compare, compare)
+    to_compare == compare 
   end
 
 end
@@ -254,12 +254,12 @@ class Presentation
 
   1: Guess the secret 4 color code created by the computer...
      You have 12 turns to crack the seecret code.
-
-  2: Create enter 4 consecutive numbers from 1 to 6,
-     each number corresponding to its color.
      Feedback: O white the number is in the wrong place
                O black the number and place is correct 
                space the number is not found
+
+  2: Create enter 4 consecutive numbers from 1 to 6,
+     each number corresponding to its color.
      If you want to quit the game at any time type: exit 
   """
 
@@ -269,16 +269,8 @@ class Presentation
     puts msj 
   end
 
-  def show_colors
-    Colors::COLORS.each do |key, val|
-      @colors << val 
-    end
-    puts "\nReference colors >> #{@colors.join(' ')} <<"
-  end
-
   def headoard
     title(HEAD, MSJ) 
-    show_colors
   end
 
 end
@@ -297,6 +289,13 @@ class Main
     @colors = Array.new 
   end
 
+  def show_colors
+    Colors::COLORS.each do |key, val|
+      @colors << val 
+    end
+    puts "\nReference colors >> #{@colors.join(' ')} <<"
+  end
+
   def computer_game 
     @computer.enter_colors
     computer_colors = @computer.computer_colors.join(' ')
@@ -309,12 +308,16 @@ class Main
   end
 
   def player_game
-    @player.enter_colors
+    computer_secret_code = Array.new
+    @computer.first_guess_color.split('').each { |val| computer_secret_code << @computer.select_color(val) }
+    puts computer_secret_code.join(' ')  #DELETE .....................
+    player_guess_code = @player.enter_colors
     puts "Player:   #{@player.player_colors.join(' ')} >> Feedback: "
-    winner(@compare.verifier_guess)
+    winner(@compare.verifier_guess(computer_secret_code, player_guess_code))
   end
 
   def winner(win)
+    puts win # DELETE ...........
     if win
       puts "\nCONGRATULATIONS YOU GUESSED THE CODE!!!"
       puts "Play again press yes..."
@@ -338,6 +341,7 @@ class Main
       if select == '1'
         puts "\nPlayer: Guess the secret code...
         Enter 4 consecutive numbers from 1 to 6 to select colors."
+        show_colors
         print 'Colors: '
         player_game 
       elsif select == '2'

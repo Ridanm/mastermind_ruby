@@ -94,12 +94,8 @@ class Player
   include Colors
 
   def initialize 
-
     @player_colors = Array.new
     @colors = ''
-
-    player_colors = Array.new
-
   end
 
   def select_color(color)
@@ -116,6 +112,7 @@ class Player
     else
       puts 'Enter 4 digits please'
     end
+    @player_colors.join(' ')
   end
 
 end
@@ -308,16 +305,18 @@ class Main
   end
 
   def player_game
+    turns = 0
     computer_secret_code = Array.new
     @computer.first_guess_color.split('').each { |val| computer_secret_code << @computer.select_color(val) }
     puts computer_secret_code.join(' ')  #DELETE .....................
-    player_guess_code = @player.enter_colors
-    puts "Player:   #{@player.player_colors.join(' ')} >> Feedback: "
-    winner(@compare.verifier_guess(computer_secret_code, player_guess_code))
+    
+
+    @player.enter_colors
+    puts "Player: #{@player.player_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_secret_code, @player.player_colors)}"
+    winner(@compare.verifier_guess(computer_secret_code.join(' '), @player.player_colors.join(' ')))
   end
 
   def winner(win)
-    puts win # DELETE ...........
     if win
       puts "\nCONGRATULATIONS YOU GUESSED THE CODE!!!"
       puts "Play again press yes..."

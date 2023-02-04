@@ -105,12 +105,12 @@ class Player
   def enter_colors
     @colors = gets.chomp
 
-    if @colors.size == 4
+    if @colors.size == 4 # Verificar colores 1..6 nothing more
       @colors.split('').each do |val|
-      @player_colors << select_color(val)
+          @player_colors << select_color(val)
       end
     else
-      puts 'Enter 4 digits please'
+      puts 'Enter 4 colors please'
     end
     @player_colors.join(' ')
   end
@@ -228,7 +228,7 @@ class Feedback
         @feed_colors << ' '
       end
     end
-    "Hits: |#{@feed_colors.join('|')}|"
+    "Hits: [#{@feed_colors.join('|')}]"
   end
 
 end
@@ -251,9 +251,9 @@ class Presentation
 
   1: Guess the secret 4 color code created by the computer...
      You have 12 turns to crack the seecret code.
-     Feedback: O white the number is in the wrong place
-               O black the number and place is correct 
-               space the number is not found
+     Feedback: O white the color is in the wrong place
+               O black the color and place is correct 
+               space the color is not found
 
   2: Create enter 4 consecutive numbers from 1 to 6,
      each number corresponding to its color.
@@ -341,7 +341,7 @@ class Main
         puts "\nPlayer: Guess the secret code...
         Enter 4 consecutive numbers from 1 to 6 to select colors."
         show_colors
-        print 'Colors: '
+        print 'Enter colors: '
         player_game 
       elsif select == '2'
         puts 'You must create secret code'

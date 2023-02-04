@@ -103,19 +103,22 @@ class Player
   end
 
   def enter_colors
-    @colors = gets.chomp
+      @colors = gets.chomp
+  end
+
+  def verifier_colors(color) 
+    if color.size == 4
+      puts "Correctopop"
+    else
+      puts "Incorrect number"
+    end
   end
 
   def selected_colors
     player_colors = Array.new 
 
-    if @colors.size == 4 # Verificar colores 1..6 nothing more
-      @colors.split('').each do |val|
-          player_colors << select_color(val)
-      end
-    else
-      puts 'Enter 4 colors please'
-    end
+    @colors.split('').each { |val| player_colors << select_color(val) }
+
     player_colors
   end
 
@@ -241,12 +244,6 @@ end
 
 class Presentation
 
-  include Colors 
-
-  def initialize 
-    @colors = Array.new 
-  end
-
   HEAD = 'WELCOME TO MASTERMIND'
 
   MSJ = """
@@ -290,6 +287,7 @@ class Main
     @feedback = feedback 
     @colors = Array.new 
     @winner = false
+    @chance = 12
   end
 
   def show_colors
@@ -315,12 +313,14 @@ class Main
     computer_first_guess = @computer.first_guess_color
     puts computer_first_guess.join(' ') #DELETE.......PUTS
 
-    until turns == 12 || @winner == true 
+    until turns == 3 || @winner == true 
+      print " \n#{@chance} opportunities, enter colors: "
       @player.enter_colors
       puts "Player: #{@player.selected_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.selected_colors)}"
 
       winner(@compare.verifier_guess(computer_first_guess.join(' '), @player.selected_colors.join(' ')))
       turns += 1
+      @chance -= 1
     end
   end
 
@@ -329,8 +329,6 @@ class Main
       puts "\nCONGRATULATIONS YOU GUESSED THE CODE!!!"
       puts "Play again press yes..."
       @winner = true
-    else 
-      puts "Enter colors: else "
     end
   end
 
@@ -350,7 +348,6 @@ class Main
         puts "\nPlayer: Guess the secret code...
         Enter 4 consecutive numbers from 1 to 6 to select colors."
         show_colors
-        print 'Enter colors: '
         player_game 
       elsif select == '2'
         puts 'You must create secret code'

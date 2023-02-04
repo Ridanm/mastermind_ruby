@@ -85,6 +85,10 @@ module Colors
     puts msj
   end
 
+  def select_color(color)
+    COLORS[color]
+  end
+
 end
 
 
@@ -96,10 +100,6 @@ class Player
   def initialize 
     @player_colors = Array.new
     @colors = ''
-  end
-
-  def select_color(color)
-    Colors::COLORS[color]
   end
 
   def enter_colors
@@ -151,12 +151,6 @@ module ColorsGenerator
     puts empty
   end
 
-  def first_guess_color
-    first_guess = ''
-    4.times { first_guess << rand(1..6).to_s } 
-    first_guess
-  end
-
 end
 
 
@@ -176,6 +170,14 @@ class Computer < Player
     @colors.split('').each do |col|
       @computer_colors << select_color(col)
     end
+  end
+
+  def first_guess_color
+    first_guess = ''
+    computer_secret_code = Array.new
+    4.times { first_guess << rand(1..6).to_s } 
+    first_guess.split('').each { |val| computer_secret_code << select_color(val) }
+    computer_secret_code
   end
 
 end
@@ -203,6 +205,7 @@ class Feedback
   def initialize(player, compare)
     @player = player
     @compare = compare
+    @feed_colors = Array.new
   end
 
   #feedback
@@ -218,7 +221,6 @@ class Feedback
     #incluido espacio en blanco, vacio
 
   def feedback_colors(to_compare, compare)
-    @feed_colors = Array.new
     compare.each_with_index do|data, ind| 
       if data == to_compare[ind]
         @feed_colors << 'O'.colorize(:color => :light_black)
@@ -305,15 +307,13 @@ class Main
   end
 
   def player_game
-    turns = 0
-    computer_secret_code = Array.new
-    @computer.first_guess_color.split('').each { |val| computer_secret_code << @computer.select_color(val) }
-    puts computer_secret_code.join(' ')  #DELETE .....................
-    
+    computer_first_guess = @computer.first_guess_color 
+    puts computer_first_guess.join(' ') #DELETE.......PUTS
 
     @player.enter_colors
-    puts "Player: #{@player.player_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_secret_code, @player.player_colors)}"
-    winner(@compare.verifier_guess(computer_secret_code.join(' '), @player.player_colors.join(' ')))
+    puts "Player: #{@player.player_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.player_colors)}"
+
+    winner(@compare.verifier_guess(computer_first_guess, @player.player_colors.join(' ')))
   end
 
   def winner(win)

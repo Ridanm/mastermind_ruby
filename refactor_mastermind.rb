@@ -104,15 +104,19 @@ class Player
 
   def enter_colors
     @colors = gets.chomp
+  end
+
+  def selected_colors
+    player_colors = Array.new 
 
     if @colors.size == 4 # Verificar colores 1..6 nothing more
       @colors.split('').each do |val|
-          @player_colors << select_color(val)
+          player_colors << select_color(val)
       end
     else
       puts 'Enter 4 colors please'
     end
-    @player_colors.join(' ')
+    player_colors
   end
 
 end
@@ -200,12 +204,9 @@ end
 
 class Feedback
 
-  attr_reader :feed_colors
-
   def initialize(player, compare)
     @player = player
     @compare = compare
-    @feed_colors = Array.new
   end
 
   #feedback
@@ -221,16 +222,18 @@ class Feedback
     #incluido espacio en blanco, vacio
 
   def feedback_colors(to_compare, compare)
+    feed_colors = Array.new 
+
     compare.each_with_index do|data, ind| 
       if data == to_compare[ind]
-        @feed_colors << 'O'.colorize(:color => :light_black)
+        feed_colors << 'O'.colorize(:color => :light_black)
       elsif to_compare.include?(data)
-        @feed_colors << 'O'.colorize(:color => :white)
+        feed_colors << 'O'.colorize(:color => :white)
       else 
-        @feed_colors << ' '
+        feed_colors << ' '
       end
     end
-    "Hits: [#{@feed_colors.join('|')}]"
+    "Hits: [#{feed_colors.join('|')}]"
   end
 
 end
@@ -286,6 +289,7 @@ class Main
     @compare = compare 
     @feedback = feedback 
     @colors = Array.new 
+    @winner = false
   end
 
   def show_colors
@@ -307,21 +311,26 @@ class Main
   end
 
   def player_game
-    computer_first_guess = @computer.first_guess_color 
+    turns = 0
+    computer_first_guess = @computer.first_guess_color
     puts computer_first_guess.join(' ') #DELETE.......PUTS
 
-    @player.enter_colors
-    puts "Player: #{@player.player_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.player_colors)}"
+    until turns == 12 || @winner == true 
+      @player.enter_colors
+      puts "Player: #{@player.selected_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.selected_colors)}"
 
-    winner(@compare.verifier_guess(computer_first_guess, @player.player_colors.join(' ')))
+      winner(@compare.verifier_guess(computer_first_guess.join(' '), @player.selected_colors.join(' ')))
+      turns += 1
+    end
   end
 
   def winner(win)
     if win
       puts "\nCONGRATULATIONS YOU GUESSED THE CODE!!!"
       puts "Play again press yes..."
+      @winner = true
     else 
-      puts "Game continue define play"
+      puts "Enter colors: else "
     end
   end
 

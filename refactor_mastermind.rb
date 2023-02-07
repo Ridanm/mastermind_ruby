@@ -94,32 +94,24 @@ end
 
 class Player 
 
-  attr_reader :player_colors, :colors
+  attr_reader :player_colors
   include Colors
 
   def initialize 
     @player_colors = Array.new
-    @colors = ''
   end
 
-  def enter_colors
-      @colors = gets.chomp
-  end
+  def enter_colors(color)
+    arr_colors = Array.new 
+    @player_colors = []
 
-  def verifier_colors(color) 
-    if color.size == 4
-      puts "Correctopop"
-    else
-      puts "Incorrect number"
+    color.split('').each { |num| arr_colors << num}
+    
+    if arr_colors.length == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
+      arr_colors.each { |val| @player_colors << select_color(val) }
+    else 
+      @player_colors << 'Insert 4 consecutive colors please.....'
     end
-  end
-
-  def selected_colors
-    player_colors = Array.new 
-
-    @colors.split('').each { |val| player_colors << select_color(val) }
-
-    player_colors
   end
 
 end
@@ -255,7 +247,7 @@ class Presentation
      You have 12 turns to crack the seecret code.
      Feedback: O white the color is in the wrong place
                O black the color and place is correct 
-               space the color is not found
+               space the color is not found in the code to guess
 
   2: Create enter 4 consecutive numbers from 1 to 6,
      each number corresponding to its color.
@@ -315,10 +307,11 @@ class Main
 
     until turns == 3 || @winner == true 
       print " \n#{@chance} opportunities, enter colors: "
-      @player.enter_colors
-      puts "Player: #{@player.selected_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.selected_colors)}"
+      ingresa_color = gets.chomp
+      @player.enter_colors(ingresa_color)
+      puts "Player: #{@player.player_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.player_colors)}"
 
-      winner(@compare.verifier_guess(computer_first_guess.join(' '), @player.selected_colors.join(' ')))
+      winner(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       turns += 1
       @chance -= 1
     end
@@ -327,7 +320,7 @@ class Main
   def winner(win)
     if win
       puts "\nCONGRATULATIONS YOU GUESSED THE CODE!!!"
-      puts "Play again press yes..."
+      puts "Play again press yes..."  # IMPLEMENT THIS........
       @winner = true
     end
   end
@@ -351,6 +344,7 @@ class Main
         player_game 
       elsif select == '2'
         puts 'You must create secret code'
+        
       end
     end
   end

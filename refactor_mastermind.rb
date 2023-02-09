@@ -112,6 +112,7 @@ class Player
     else 
       @player_colors << 'Insert 4 consecutive colors please.....'
     end
+    @player_colors 
   end
 
 end
@@ -166,14 +167,15 @@ class Computer < Player
 
   def enter_colors
     @colors = first_guess_color
-    @colors.split('').each do |col|
+    @colors.each do |col|
       @computer_colors << select_color(col)
     end
   end
 
   def first_guess_color
-    first_guess = ''
     computer_secret_code = Array.new
+    first_guess = ''
+
     4.times { first_guess << rand(1..6).to_s } 
     first_guess.split('').each { |val| computer_secret_code << select_color(val) }
     computer_secret_code
@@ -217,18 +219,18 @@ class Feedback
     #incluido espacio en blanco, vacio
 
   def feedback_colors(to_compare, compare)
-    feed_colors = Array.new 
+    back = Array.new 
 
     compare.each_with_index do|data, ind| 
       if data == to_compare[ind]
-        feed_colors << 'O'.colorize(:color => :light_black)
+        back << 'O'.colorize(:color => :light_black)
       elsif to_compare.include?(data)
-        feed_colors << 'O'.colorize(:color => :white)
+        back << 'O'.colorize(:color => :white)
       else 
-        feed_colors << ' '
+        back << ' '
       end
     end
-    "Hits: [#{feed_colors.join('|')}]"
+    "Hits: [#{back.join('|')}]"
   end
 
 end
@@ -264,6 +266,12 @@ class Presentation
     title(HEAD, MSJ) 
   end
 
+  def show_option_two
+    puts "\n  You have chosen option number 2, 
+  enter 4 numbers form 1 to 6, 
+  each number corresponding to its color."
+  end
+
 end
 
 
@@ -272,11 +280,12 @@ class Main
   attr_reader :colors, :player, :computer
   include Colors 
 
-  def initialize(player, computer, compare, feedback) 
+  def initialize(player, computer, compare, feedback, presentation) 
     @player = player 
     @computer = computer
     @compare = compare 
     @feedback = feedback 
+    @presentation = presentation 
     @colors = Array.new 
     @winner = false
     @chance = 12
@@ -289,30 +298,48 @@ class Main
     puts "\nReference colors >> #{@colors.join(' ')} <<"
   end
 
-  def computer_game 
-    @computer.enter_colors
-    computer_colors = @computer.computer_colors.join(' ')
-    feedback = @feedback.feedback_colors(@player.player_colors, computer.computer_colors)
-    colors_generator = ColorsGenerator::colors_generator(@computer, @feedback.feed_colors)
-    compare = @compare.verifier_guess
+  # computer_game
+  # 1= The computer must be abble to choose four colors to compare whith the opponent's colors.
+  # 2= Check the colors and they matches, winner_verifier
+  # 3- Based on the feedback return another color code.
+  # 4- The computer's turns must increase or decrease until the 12 turns are completed, 
+  #    in which case the game ends.
 
-    puts "Computer: #{computer_colors} #{feedback}"
-    puts @colors.join(' ')
+  def computer_game 
+    turn = 0
+    color = gets.chomp
+    player_choose_colors = @player.enter_colors(color)
+    puts "PLAYER COLORS: #{player_choose_colors.join(' ')}"  # DELETE.......
+
+    until turn == 12 || @winner # CORRECT TURNS
+      computer_colors = @computer.enter_colors 
+
+      feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+      compare = @compare.verifier_guess(player_choose_colors, computer_colors)
+      #colors_generator = ColorsGenerator::colors_generator(@computer, feedback)
+
+      puts "\nComputer: #{computer_colors.join(' ')} #{feedback}"
+      turn += 1
+    end
+
+    if turn >= 12 
+      puts "\n  Congratulations you have won...\n  the code could not be broken."
+    end
   end
 
   def player_game
-    turns = 0
+    turn = 0
     computer_first_guess = @computer.first_guess_color
     puts computer_first_guess.join(' ') #DELETE.......PUTS
 
-    until turns == 3 || @winner == true 
+    until turn == 12 || @winner 
       print " \n#{@chance} opportunities, enter colors: "
       ingresa_color = gets.chomp
       @player.enter_colors(ingresa_color)
       puts "Player: #{@player.player_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.player_colors)}"
 
       winner(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
-      turns += 1
+      turn += 1
       @chance -= 1
     end
   end
@@ -343,8 +370,10 @@ class Main
         show_colors
         player_game 
       elsif select == '2'
-        puts 'You must create secret code'
-        
+        show_colors
+        @presentation.show_option_two
+        print "\nEnter secret code: "
+        computer_game 
       end
     end
   end
@@ -359,5 +388,5 @@ guess_compare = CompareGuess.new(player,computer)
 feedback = Feedback.new(player, computer)
 
 presentation.headoard
-main = Main.new(player, computer, guess_compare, feedback)
+main = Main.new(player, computer, guess_compare, feedback, presentation)
 main.play 

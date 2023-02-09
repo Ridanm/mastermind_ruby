@@ -136,6 +136,7 @@ module ColorsGenerator
     empty = ''
     o_white = ''
     o_rand = rand(1..6).to_s
+
     feed.each_with_index do |color, ind|
       if color == Colors::MARK['black']
         @new_color << reference.computer_colors[ind]
@@ -165,7 +166,7 @@ class Computer < Player
     @colors = ''
   end
 
-  def enter_colors
+  def enter_colors # Crear un atrubuto el cual por defecto tenga first_guess color, el otro caso para cambiar los colores
     @colors = first_guess_color
     @colors.each do |col|
       @computer_colors << select_color(col)
@@ -310,11 +311,12 @@ class Main
     color = gets.chomp
     player_choose_colors = @player.enter_colors(color)
     puts "PLAYER COLORS: #{player_choose_colors.join(' ')}"  # DELETE.......
-
+    
     until turn == 12 || @winner # CORRECT TURNS
-      computer_colors = @computer.enter_colors 
+      computer_colors = @computer.first_guess_color
 
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+
       compare = @compare.verifier_guess(player_choose_colors, computer_colors)
       #colors_generator = ColorsGenerator::colors_generator(@computer, feedback)
 
@@ -324,6 +326,8 @@ class Main
 
     if turn >= 12 
       puts "\n  Congratulations you have won...\n  the code could not be broken."
+    else 
+      puts "\n  The code has broken...\n  Play again write yes..." # IMPLEMENT THIS...........
     end
   end
 
@@ -347,7 +351,7 @@ class Main
   def winner(win)
     if win
       puts "\nCONGRATULATIONS YOU GUESSED THE CODE!!!"
-      puts "Play again press yes..."  # IMPLEMENT THIS........
+      puts "Play again write yes..."  # IMPLEMENT THIS........
       @winner = true
     end
   end

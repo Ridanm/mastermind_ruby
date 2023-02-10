@@ -131,7 +131,7 @@ module ColorsGenerator
   # a otro indice que no sea correcto   
   # #Si el color no esta cambiar color
 
-  def self.colors_generator(reference, feed)       
+  def colors_generator(reference, feed)       
     @new_color = []         
     empty = ''
     o_white = ''
@@ -190,7 +190,6 @@ class CompareGuess
   def initialize(player, computer)
     @player = player 
     @computer = computer 
-    @feedback_list = Array.new(4, ' ')
   end
 
   def verifier_guess(to_compare, compare)
@@ -231,7 +230,7 @@ class Feedback
         back << ' '
       end
     end
-    "Hits: [#{back.join('|')}]"
+    "Hits: [#{back.join('|')}]" 
   end
 
 end
@@ -313,19 +312,26 @@ class Main
     puts "PLAYER COLORS: #{player_choose_colors.join(' ')}"  # DELETE.......
     
     until turn == 12 || @winner # CORRECT TURNS
-      computer_colors = @computer.first_guess_color
+      if turn == 0 
+        computer_colors = @computer.first_guess_color
+      end 
 
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
 
       compare = @compare.verifier_guess(player_choose_colors, computer_colors)
-      #colors_generator = ColorsGenerator::colors_generator(@computer, feedback)
 
-      puts "\nComputer: #{computer_colors.join(' ')} #{feedback}"
+
+      if turn < 9 # MODIFY THIS ............
+        puts "\nTurn_#{turn+1}  Computer: #{computer_colors.join(' ')} #{feedback}"
+      else 
+        puts "\nTurn_#{turn+1} Computer: #{computer_colors.join(' ')} #{feedback}"
+      end
+
       turn += 1
     end
 
     if turn >= 12 
-      puts "\n  Congratulations you have won...\n  the code could not be broken."
+      puts "\n  Congratulations you have won...\n  The code could not be broken."
     else 
       puts "\n  The code has broken...\n  Play again write yes..." # IMPLEMENT THIS...........
     end

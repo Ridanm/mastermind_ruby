@@ -2,44 +2,25 @@
 #    Mastermind:  para que el computador 
 #    adivine el código de 4 dígitos
 # 1- Player
-#    Crear un código de 4 dígitos
-#    seleccionado por el jugador.
+#    Crear un código de 4 dígitos ingresado por el jugador.
 # 2- Computer
-#    El computador en el primer turno 
-#    debe crear un código al azar 
-#    de 4 dígitos para comparar con 
-#    el código  del jugador. 
+#    El computador en el primer turno debe crear un código al azar 
+#    de 4 dígitos para comparar con el código del jugadorn basado en el feedback. 
 # 3- Feedback
-#    Se debe dar retroalimentación de 
-#    la comparación de los códigos 
-#    Es decir graficar: los aciertos, 
-#    si el número está incluido pero
-#    no en esa pasición, si él número
-#    no está incluido en el código del 
-#    jugador.
+#    Se debe dar retroalimentación de la comparación de los códigos 
+#    Es decir graficar: los aciertos, si el número está incluido pero
+#    no en esa pasición, si él número no está incluido en el código del jugador.
 # 4- ColorGenerator
-#    Basado en la retroalimentación
-#    debe devolver otro código 
-#    Si el número el correcto y el 
-#    índice también se debe mantener
-#    dicho número.
-#    Si el número está en el lugar 
-#    incorrecto se debe variar su
-#    índice en el próximo código
-#    O sea si el número no existe dicho
-#    número se debe cambiar por otro
-#    que va del 1 al 6
+#    Basado en la retroalimentación debe devolver otro código 
+#    Si el número el correcto y el índice también se debe mantener dicho número.
+#    Si el número está en el lugar incorrecto se debe variar su índice en el próximo código
+#    O sea si el número no existe dicho número se debe cambiar por otro que va del 1 al 6
 # 5- Winner
-#    Comprobar cuantos turnos por 
-#    comparacionhan de colores han
-#    transcurrido el máximo permitido 12
-#    En caso de que todos los colores 
-#    coincidan hay un ganador. 
-#    En caso de llegar a los 12 turnos
-#    y no adivinar: Juego terminado, 
-#    preguntar si quiere volver a jugar
-#    Si no hay ganador y no llegamos a 
-#    los 12 turnos volver al turno 4.
+#    Comprobar cuantos turnos por comparación de colores han transcurrido el máximo permitido 12
+#    En caso de que todos los colores coincidan hay un ganador. 
+#    En caso de llegar a los 12 turnos y no adivinar: Juego terminado, preguntar si quiere
+#    volver a jugar.
+#    Si no hay ganador y no llegamos a los 12 turnos volver al turno 4.
 
 
 # Para que el computador adivine el código de 4 dígitos
@@ -71,7 +52,7 @@ module Colors
     '6' => '  6  '.colorize(:color => :white, :background => :magenta)
   }
 
-  MARK = {
+  Mark = {
     'black' => 'O'.colorize(:color => :light_black),
     'white' => 'O'.colorize(:color => :white)
   }
@@ -114,72 +95,47 @@ class Player
     end
     @player_colors 
   end
-
-end
-
-
-module ColorsGenerator      
-
-  include Colors
-  #Recibe un parametro feedback     
-  # debemos guardarlos para
-  # comparar los colores              
-  # #Generar los colores                
-  # Si es correcto queda el color en  
-  # dicho indice                    
-  #Si esta incluido cambiar el color  
-  # a otro indice que no sea correcto   
-  # #Si el color no esta cambiar color
-
-  def colors_generator(reference, feed)       
-    @new_color = []         
-    empty = ''
-    o_white = ''
-    o_rand = rand(1..6).to_s
-
-    feed.each_with_index do |color, ind|
-      if color == Colors::MARK['black']
-        @new_color << reference.computer_colors[ind]
-      elsif color == Colors::MARK['white']
-        o_white = reference.computer_colors[ind]
-        @new_color << Colors::COLORS[o_rand]
-      elsif color == ' '
-        @new_color << o_white
-      end
-    end                                 
-    puts feed.join(' | ')
-    puts @new_color.join(' ')
-    puts empty
-  end
-
 end
 
 
 class Computer < Player
 
-  attr_reader :colors, :computer_colors
+  attr_reader :computer_colors
   include Colors 
-  include ColorsGenerator
 
   def initialize
     @computer_colors = Array.new
-    @colors = ''
   end
 
-  def enter_colors # Crear un atrubuto el cual por defecto tenga first_guess color, el otro caso para cambiar los colores
-    @colors = first_guess_color
-    @colors.each do |col|
-      @computer_colors << select_color(col)
-    end
-  end
-
-  def first_guess_color
+  def first_guess_color(first_guess)
     computer_secret_code = Array.new
-    first_guess = ''
 
-    4.times { first_guess << rand(1..6).to_s } 
+    if first_guess == ''
+      4.times { first_guess << rand(1..6).to_s } 
+    else 
+      first_guess
+    end
+
     first_guess.split('').each { |val| computer_secret_code << select_color(val) }
+
     computer_secret_code
+  end
+
+  def colors_generator(comp_colors, feedback)    
+    result = Array.new
+    empty = ' '
+    o_rand = rand(1..6).to_s
+
+    feedback.each_with_index do |color, ind|
+      if color == Colors::Mark['black']
+        result << select_color(ind)
+      elsif color == Colors::Mark['white']
+        result <<  Colors::COLORS[o_rand]
+      elsif color == ' '
+        result << empty 
+      end
+    end 
+    result 
   end
 
 end
@@ -201,36 +157,26 @@ end
 
 class Feedback
 
+  include Colors 
+
   def initialize(player, compare)
     @player = player
     @compare = compare
   end
-
-  #feedback
-    #Usar el array de colores ingresado
-    # separa cada dato split().
-    #Recorrerlo con each_with 
-    # dato he indice.
-    #Si el dato en el array color_comp
-    # coincide con player_col[index]
-    #Si el color esta include?() pero 
-    # en el lugar incorrecto.
-    #Por último si el color no está 
-    #incluido espacio en blanco, vacio
 
   def feedback_colors(to_compare, compare)
     back = Array.new 
 
     compare.each_with_index do|data, ind| 
       if data == to_compare[ind]
-        back << 'O'.colorize(:color => :light_black)
+        back << Colors::Mark['black']
       elsif to_compare.include?(data)
-        back << 'O'.colorize(:color => :white)
+        back << Colors::Mark['white']
       else 
         back << ' '
       end
     end
-    "Hits: [#{back.join('|')}]" 
+    back 
   end
 
 end
@@ -238,9 +184,9 @@ end
 
 class Presentation
 
-  HEAD = 'WELCOME TO MASTERMIND'
+  Title = 'WELCOME TO MASTERMIND'
 
-  MSJ = """
+  Msj = %Q(
   In this game you can choose guess the code or create the code 
   Enter number : 1 to guess the code 
   or           : 2 to create the code 
@@ -254,7 +200,7 @@ class Presentation
   2: Create enter 4 consecutive numbers from 1 to 6,
      each number corresponding to its color.
      If you want to quit the game at any time type: exit 
-  """
+)
 
   def title(head, msj) 
     long = head.length * 2
@@ -263,7 +209,7 @@ class Presentation
   end
 
   def headoard
-    title(HEAD, MSJ) 
+    title(Title, Msj) 
   end
 
   def show_option_two
@@ -311,26 +257,22 @@ class Main
     player_choose_colors = @player.enter_colors(color)
     puts "PLAYER COLORS: #{player_choose_colors.join(' ')}"  # DELETE.......
     
-    until turn == 12 || @winner # CORRECT TURNS
-      if turn == 0 
-        computer_colors = @computer.first_guess_color
-      end 
+    print 'Computer ingrese los colores :) '
+    int_colors = gets.chomp # DELETE..........................
+    puts computer_colors = @computer.first_guess_color(int_colors) 
+    
 
-      feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+# until turn == 12 || @winner
+    feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
 
-      compare = @compare.verifier_guess(player_choose_colors, computer_colors)
+    puts "\nTurn_#{turn+1}  Computer: #{computer_colors.join(' ')} Hits: [#{feedback.join('|')}]"
 
-
-      if turn < 9 # MODIFY THIS ............
-        puts "\nTurn_#{turn+1}  Computer: #{computer_colors.join(' ')} #{feedback}"
-      else 
-        puts "\nTurn_#{turn+1} Computer: #{computer_colors.join(' ')} #{feedback}"
-      end
-
+    compare = @compare.verifier_guess(player_choose_colors, computer_colors)
+    
       turn += 1
-    end
+# end
 
-    if turn >= 12 
+    if compare # turn >= 12 # MODIFI THIS ................
       puts "\n  Congratulations you have won...\n  The code could not be broken."
     else 
       puts "\n  The code has broken...\n  Play again write yes..." # IMPLEMENT THIS...........

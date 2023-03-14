@@ -249,7 +249,7 @@ class Main
   # 2= Check the colors and they matches, winner_verifier
   # 3- Based on the feedback return another color code.
   # 4- The computer's turns must increase or decrease until the 12 turns are completed, 
-  #    in which case the game ends.
+  # in which case the game ends.
 
   def computer_game 
     turn = 0

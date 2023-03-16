@@ -141,25 +141,23 @@ module ColorsGenerator
   # #Si el color no esta cambiar color
 
   def self.colors_generator(reference, feed)       
-    @new_color = []         
-    empty = ''
-    o_white = ''
-    o_rand = rand(1..6).to_s
+    new_color = []         
+    empty = ' '
+    o_rand = rand(1..6)
 
     feed.each_with_index do |mark, ind|
       reference.each_with_index do |number, pos| 
         if mark == ColorsMarks::Mark['black']
-          @new_color << number[ind]
+          new_color << number[ind].to_i
         elsif mark == ColorsMarks::Mark['white']
-          @new_color = number[o_rand]
-        elsif mark == ' '
-          @new_color << o_rand[pos]
+          new_color = number[o_rand].to_i
+        elsif mark == empty 
+          new_color << o_rand[pos].to_i
         end
       end
     end                                 
-    puts feed.join(' | ')
-    puts @new_color.join(' ')
-    puts empty
+    #puts feed.join(' | ')
+    #puts new_color.join(' ')
   end
 
 end
@@ -328,7 +326,7 @@ class Main
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
 
       compare = @compare.verifier_guess(player_choose_colors, computer_colors)
-      #colors_generator = ColorsGenerator::colors_generator(@computer, feedback)
+     # colors_generator = ColorsGenerator::colors_generator(@computer, feedback) # CORRECT THiSs.............
 
       puts "\nComputer: #{computer_colors.join(' ')} #{feedback}"
       turn += 1

@@ -140,7 +140,8 @@ module ColorsGenerator
   # a otro indice que no sea correcto   
   # #Si el color no esta cambiar color
 
-  def self.colors_generator(reference, feed)       
+  def self.colors_generator(reference, feed)  
+    @guard = 
     new_color = []         
     empty = ' '
     o_rand = rand(1..6)
@@ -171,7 +172,7 @@ class Computer < Player
     @colors = ''
   end
 
-  def enter_colors # Crear un atrubuto el cual por defecto tenga first_guess color, el otro caso para cambiar los colores
+  def enter_colors
     @colors = first_guess_color
     @colors.each do |col|
       @computer_colors << select_color(col)

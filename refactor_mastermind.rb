@@ -156,10 +156,7 @@ module ColorsGenerator
         end
       end
     end                                 
-    #puts feed.join(' | ')
-    #puts new_color.join(' ')
   end
-
 end
 
 
@@ -215,17 +212,16 @@ class Feedback
     @compare = compare
   end
 
-  #feedback
-    #Usar el array de colores ingresado
+    # Feedback mediante el array de colores
     # separa cada dato split().
-    #Recorrerlo con each_with 
+    # Recorrerlo con each_with 
     # dato he indice.
-    #Si el dato en el array color_comp
+    # Si el dato en el array color_comp
     # coincide con player_col[index]
-    #Si el color esta include?() pero 
+    # Si el color esta include?() pero 
     # en el lugar incorrecto.
-    #Por último si el color no está 
-    #incluido espacio en blanco, vacio
+    # Por último si el color no está 
+    # incluido espacio en blanco, vacio
 
   def feedback_colors(to_compare, compare)
     back = Array.new 
@@ -239,7 +235,7 @@ class Feedback
         back << ' '
       end
     end
-    "Hits: [#{back.join('|')}]"
+    back
   end
 
 end
@@ -318,17 +314,14 @@ class Main
     turn = 0
     color = gets.chomp
     player_choose_colors = @player.enter_colors(color)
-    puts "PLAYER Colors: #{player_choose_colors.join(' ')}"  # DELETE.......
+    puts "PLAYER Colors: #{player_choose_colors.join(' ')}" 
     
-    until turn == 12 || @winner # CORRECT TURNS
+    until turn == 12 || @winner 
       computer_colors = @computer.first_guess_color
-
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
-
       compare = @compare.verifier_guess(player_choose_colors, computer_colors)
-     # colors_generator = ColorsGenerator::colors_generator(@computer, feedback) # CORRECT THiSs.............
-
-      puts "\nComputer: #{computer_colors.join(' ')} #{feedback}"
+      colors_generator = ColorsGenerator::colors_generator(computer_colors, feedback) # CORRECT THiSs.............
+      puts "\nComputer: #{computer_colors.join(' ')} #{"Hits: |#{feedback.join('|')}|"}"
       turn += 1
     end
 

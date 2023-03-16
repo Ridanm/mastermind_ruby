@@ -61,9 +61,17 @@
 
 require 'colorize'
 
-module Colors 
+module ColorsMarks 
+  color_number = {
+    '1' => 1,
+    '2' => 2,
+    '3' => 3,
+    '4' => 4,
+    '5' => 5,
+    '6' => 6
+  }
 
-  COLORS = {
+  Colors = {
     '1' => '  1  '.colorize(:color => :white, :background => :red),
     '2' => '  2  '.colorize(:color => :white, :background => :blue),
     '3' => '  3  '.colorize(:color => :black, :background => :yellow), 
@@ -72,7 +80,7 @@ module Colors
     '6' => '  6  '.colorize(:color => :white, :background => :magenta)
   }
 
-  MARK = {
+  Mark = {
     'black' => 'O'.colorize(:color => :light_black),
     'white' => 'O'.colorize(:color => :white)
   }
@@ -87,7 +95,7 @@ module Colors
   end
 
   def select_color(color)
-    COLORS[color]
+    Colors[color]
   end
 
 end
@@ -96,7 +104,7 @@ end
 class Player 
 
   attr_reader :player_colors
-  include Colors
+  include ColorsMarks
 
   def initialize 
     @player_colors = Array.new
@@ -121,7 +129,7 @@ end
 
 module ColorsGenerator      
 
-  include Colors
+  include ColorsMarks
   #Recibe un parametro feedback     
   # debemos guardarlos para
   # comparar los colores              
@@ -138,14 +146,15 @@ module ColorsGenerator
     o_white = ''
     o_rand = rand(1..6).to_s
 
-    feed.each_with_index do |color, ind|
-      if color == Colors::MARK['black']
-        @new_color << reference.computer_colors[ind]
-      elsif color == Colors::MARK['white']
-        o_white = reference.computer_colors[ind]
-        @new_color << Colors::COLORS[o_rand]
-      elsif color == ' '
-        @new_color << o_white
+    feed.each_with_index do |mark, ind|
+      reference.each_with_index do |number, pos| 
+        if mark == ColorsMarks::Mark['black']
+          @new_color << number[ind]
+        elsif mark == ColorsMarks::Mark['white']
+          @new_color = number[o_rand]
+        elsif mark == ' '
+          @new_color << o_rand[pos]
+        end
       end
     end                                 
     puts feed.join(' | ')
@@ -159,7 +168,7 @@ end
 class Computer < Player
 
   attr_reader :colors, :computer_colors
-  include Colors 
+  include ColorsMarks 
   include ColorsGenerator
 
   def initialize
@@ -242,7 +251,7 @@ class Presentation
 
   HEAD = 'WELCOME TO MASTERMIND'
 
-  MSJ = """
+  MSJ = %Q(
   In this game you can choose guess the code or create the code 
   Enter number : 1 to guess the code 
   or           : 2 to create the code 
@@ -256,7 +265,7 @@ class Presentation
   2: Create enter 4 consecutive numbers from 1 to 6,
      each number corresponding to its color.
      If you want to quit the game at any time type: exit 
-  """
+  )
 
   def title(head, msj) 
     long = head.length * 2
@@ -280,7 +289,7 @@ end
 class Main 
 
   attr_reader :colors, :player, :computer
-  include Colors 
+  include ColorsMarks 
 
   def initialize(player, computer, compare, feedback, presentation) 
     @player = player 
@@ -294,7 +303,7 @@ class Main
   end
 
   def show_colors
-    Colors::COLORS.each do |key, val|
+    ColorsMarks::Colors.each do |key, val|
       @colors << val 
     end
     puts "\nReference colors >> #{@colors.join(' ')} <<"
@@ -311,7 +320,7 @@ class Main
     turn = 0
     color = gets.chomp
     player_choose_colors = @player.enter_colors(color)
-    puts "PLAYER COLORS: #{player_choose_colors.join(' ')}"  # DELETE.......
+    puts "PLAYER Colors: #{player_choose_colors.join(' ')}"  # DELETE.......
     
     until turn == 12 || @winner # CORRECT TURNS
       computer_colors = @computer.first_guess_color

@@ -62,15 +62,7 @@
 require 'colorize'
 
 module ColorsMarks 
-  color_number = {
-    '1' => 1,
-    '2' => 2,
-    '3' => 3,
-    '4' => 4,
-    '5' => 5,
-    '6' => 6
-  }
-
+  
   Colors = {
     '1' => '  1  '.colorize(:color => :white, :background => :red),
     '2' => '  2  '.colorize(:color => :white, :background => :blue),
@@ -112,14 +104,14 @@ class Player
 
   def enter_colors(color)
     arr_colors = Array.new 
-    @player_colors = []
+  @player_colors = Array.new 
 
     color.split('').each { |num| arr_colors << num}
     
-    if arr_colors.length == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
+    if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
       arr_colors.each { |val| @player_colors << select_color(val) }
     else 
-      @player_colors << 'Insert 4 consecutive colors please.....'
+      @player_colors << 'Insert 4 consecutive colors please... The numbers from 1 to 6'
     end
     @player_colors 
   end
@@ -169,14 +161,17 @@ class Computer < Player
 
   def initialize
     @computer_colors = Array.new
-    @colors = ''
   end
 
-  def enter_colors
-    @colors = first_guess_color
-    @colors.each do |col|
-      @computer_colors << select_color(col)
+  def enter_colors(colors = '')
+    if colors == ''
+      first_guess_color.each {|col| @computer_colors << col}
+    else
+      colors.split('').each do |col|
+        @computer_colors << select_color(col)
+      end
     end
+    @computer_colors
   end
 
   def first_guess_color
@@ -191,12 +186,11 @@ class Computer < Player
 end
 
 
-class CompareGuess
+class CheckWinner
  
   def initialize(player, computer)
     @player = player 
     @computer = computer 
-    @feedback_list = Array.new(4, ' ')
   end
 
   def verifier_guess(to_compare, compare)
@@ -229,9 +223,9 @@ class Feedback
 
     compare.each_with_index do|data, ind| 
       if data == to_compare[ind]
-        back << 'O'.colorize(:color => :light_black)
+        back << ColorsMarks::Mark['black']
       elsif to_compare.include?(data)
-        back << 'O'.colorize(:color => :white)
+        back << ColorsMarks::Mark['white']
       else 
         back << ' '
       end
@@ -317,14 +311,15 @@ class Main
     player_choose_colors = @player.enter_colors(color)
     puts "PLAYER Colors: #{player_choose_colors.join(' ')}" 
     
-    until turn == 12 || @winner 
-      computer_colors = @computer.first_guess_color
+    #until turn == 12 || @winner 
+      comp_colors = gets.chomp 
+      computer_colors = @computer.enter_colors(comp_colors)
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
       compare = @compare.verifier_guess(player_choose_colors, computer_colors)
       colors_generator = ColorsGenerator::colors_generator(computer_colors, feedback) # CORRECT THiSs.............
       puts "\nComputer: #{computer_colors.join(' ')} #{"Hits: |#{feedback.join('|')}|"}"
-      turn += 1
-    end
+      #turn += 1
+    #end
 
     if turn >= 12 
       puts "\n  Congratulations you have won...\n  the code could not be broken."
@@ -340,9 +335,9 @@ class Main
 
     until turn == 12 || @winner 
       print " \n#{@chance} opportunities, enter colors: "
-      ingresa_color = gets.chomp
-      @player.enter_colors(ingresa_color)
-      puts "Player: #{@player.player_colors.join(' ')} >> Feedback #{@feedback.feedback_colors(computer_first_guess, @player.player_colors)}"
+      colors = gets.chomp
+      @player.enter_colors(colors)
+      puts "Player: #{@player.player_colors.join(' ')} >> Feedback |#{@feedback.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
 
       winner(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       turn += 1
@@ -390,7 +385,7 @@ end
 presentation = Presentation.new 
 player = Player.new
 computer = Computer.new 
-guess_compare = CompareGuess.new(player,computer)
+guess_compare = CheckWinner.new(player,computer)
 feedback = Feedback.new(player, computer)
 
 presentation.headoard

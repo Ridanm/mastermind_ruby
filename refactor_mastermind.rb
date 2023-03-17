@@ -316,9 +316,9 @@ class Main
       computer_colors = @computer.enter_colors(comp_colors)
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
       compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
-      winner(compare_winner)
+      winner?(compare_winner)
 
-      
+
       colors_generator = ColorsGenerator::colors_generator(computer_colors, feedback) # CORRECT THiSs.............
       puts "\nComputer: #{computer_colors.join(' ')} #{"Hits: |#{feedback.join('|')}|"}"
       #turn += 1
@@ -342,13 +342,13 @@ class Main
       @player.enter_colors(colors)
       puts "Player: #{@player.player_colors.join(' ')} >> Feedback |#{@feedback.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
 
-      winner(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
+      winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       turn += 1
       @chance -= 1
     end
   end
 
-  def winner(win)
+  def winner?(win)
     if win
       puts "\nThe code has been discovered !!!"
       puts "Play again write yes..."  # IMPLEMENT THIS........

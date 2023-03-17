@@ -299,25 +299,26 @@ class Main
   end
 
   # computer_game
-  # 1= The computer must be abble to choose four colors to compare whith the opponent's colors.
-  # 2= Check the colors and they matches, winner_verifier
+  # 1- The computer must be abble to choose four colors to compare whith the opponent's colors.
+  # 2- Check the colors and they matches, winner_verifier
   # 3- Based on the feedback return another color code.
+  #  - Compare if there is a winner 
   # 4- The computer's turns must increase or decrease until the 12 turns are completed, 
   #    in which case the game ends.
 
   def computer_game 
-    turn = 0
+    turn = 1
     color = gets.chomp
     player_choose_colors = @player.enter_colors(color)
     puts "PLAYER Colors: #{player_choose_colors.join(' ')}" 
     
     #until turn == 12 || @winner 
       comp_colors = gets.chomp 
-      computer_colors = @computer.enter_colors(comp_colors)
+      computer_colors = @computer.enter_colors(comp_colors) if turn == 0
+      computer_colors = @computer.enter_colors()
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
       compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
       winner?(compare_winner)
-
 
       colors_generator = ColorsGenerator::colors_generator(computer_colors, feedback) # CORRECT THiSs.............
       puts "\nComputer: #{computer_colors.join(' ')} #{"Hits: |#{feedback.join('|')}|"}"

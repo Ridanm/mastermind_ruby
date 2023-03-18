@@ -132,7 +132,7 @@ module ColorsGenerator
   # a otro indice que no sea correcto   
   # #Si el color no esta cambiar color
 
-  def self.colors_generator(reference, feed)  
+  def self.colors_generator(feed, reference)  
     @guard = 
     new_color = []         
     empty = ' '
@@ -320,7 +320,7 @@ class Main
       compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
       winner?(compare_winner)
 
-      colors_generator = ColorsGenerator::colors_generator(computer_colors, feedback) # CORRECT THiSs.............
+      colors_generator = ColorsGenerator::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
       puts "\nComputer: #{computer_colors.join(' ')} #{"Hits: |#{feedback.join('|')}|"}"
       #turn += 1
     #end

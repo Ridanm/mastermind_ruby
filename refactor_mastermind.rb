@@ -86,8 +86,10 @@ module ColorsMarks
     puts msj
   end
 
-  def select_color(color)
-    Colors[color]
+  def show_color(color)
+    getting_colors = Array.new
+    color.each { |num| getting_colors << Colors[num]}
+    getting_colors
   end
 
 end
@@ -109,7 +111,7 @@ class Player
     color.split('').each { |num| arr_colors << num}
     
     if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
-      arr_colors.each { |val| @player_colors << select_color(val) }
+      arr_colors.each { |val| @player_colors << val } # show_color(val)...................
     else 
       @player_colors << 'Insert 4 consecutive colors please... The numbers from 1 to 6'
     end
@@ -164,14 +166,15 @@ class Computer < Player
   end
 
   def enter_colors(colors = '')
+    computer_colors = Array.new 
     if colors == ''
-      first_guess_color.each {|col| @computer_colors << col}
+      first_guess_color.each {|col| computer_colors << col}
     else
       colors.split('').each do |col|
-        @computer_colors << select_color(col)
+        computer_colors << col #show_color(col)..............................
       end
     end
-    @computer_colors
+    computer_colors
   end
 
   def first_guess_color
@@ -179,7 +182,7 @@ class Computer < Player
     first_guess = ''
 
     4.times { first_guess << rand(1..6).to_s } 
-    first_guess.split('').each { |val| computer_secret_code << select_color(val) }
+    first_guess.split('').each { |val| computer_secret_code << val } #show_color(val)..............
     computer_secret_code
   end
 
@@ -291,7 +294,7 @@ class Main
     @chance = 12
   end
 
-  def show_colors
+  def all_colors
     ColorsMarks::Colors.each do |key, val|
       @colors << val 
     end
@@ -307,23 +310,25 @@ class Main
   #    in which case the game ends.
 
   def computer_game 
-    turn = 1
+    turn = 0
     color = gets.chomp
     player_choose_colors = @player.enter_colors(color)
     puts "PLAYER Colors: #{player_choose_colors.join(' ')}" 
     
-    #until turn == 12 || @winner 
-      comp_colors = gets.chomp 
-      computer_colors = @computer.enter_colors(comp_colors) if turn == 0
-      computer_colors = @computer.enter_colors()
-      feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+    until turn == 2 || @winner 
+        comp_colors = gets.chomp 
+        computer_colors = @computer.enter_colors(comp_colors)
+puts 'COMPUT', computer_colors, show_color(computer_colors).join(' ')
+        feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+
+        colors_generator = ColorsGenerator::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
+
       compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
       winner?(compare_winner)
 
-      colors_generator = ColorsGenerator::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
       puts "\nComputer: #{computer_colors.join(' ')} #{"Hits: |#{feedback.join('|')}|"}"
-      #turn += 1
-    #end
+      turn += 1
+    end
 
     if turn >= 12 
       puts "\n  Congratulations you have won...\n  the code could not be broken."
@@ -373,10 +378,10 @@ class Main
       if select == '1'
         puts "\nPlayer: Guess the secret code...
         Enter 4 consecutive numbers from 1 to 6 to select colors."
-        show_colors
+        all_colors
         player_game 
       elsif select == '2'
-        show_colors
+        all_colors
         @presentation.show_option_two
         print "\nEnter secret code: "
         computer_game 

@@ -86,10 +86,33 @@ module ColorsMarks
     puts msj
   end
 
-  def show_color(color)
+  def color_transform(color)
     getting_colors = Array.new
     color.each { |num| getting_colors << Colors[num]}
     getting_colors
+  end
+
+  def show_colors(arr)
+    puts arr.join(' ')
+  end
+
+  def self.colors_generator(feed, reference)  
+    @guard = 
+    new_color = []         
+    empty = ' '
+    o_rand = rand(1..6)
+
+    feed.each_with_index do |mark, ind|
+      reference.each_with_index do |number, pos| 
+        if mark == ColorsMarks::Mark['black']
+          new_color << number[ind].to_i
+        elsif mark == ColorsMarks::Mark['white']
+          new_color = number[o_rand].to_i
+        elsif mark == empty 
+          new_color << o_rand[pos].to_i
+        end
+      end
+    end                                 
   end
 
 end
@@ -111,7 +134,7 @@ class Player
     color.split('').each { |num| arr_colors << num}
     
     if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
-      arr_colors.each { |val| @player_colors << val } # show_color(val)...................
+      arr_colors.each { |val| @player_colors << val } # color_transform(val)...................
     else 
       @player_colors << 'Insert 4 consecutive colors please... The numbers from 1 to 6'
     end
@@ -121,45 +144,10 @@ class Player
 end
 
 
-module ColorsGenerator      
-
-  include ColorsMarks
-  #Recibe un parametro feedback     
-  # debemos guardarlos para
-  # comparar los colores              
-  # #Generar los colores                
-  # Si es correcto queda el color en  
-  # dicho indice                    
-  #Si esta incluido cambiar el color  
-  # a otro indice que no sea correcto   
-  # #Si el color no esta cambiar color
-
-  def self.colors_generator(feed, reference)  
-    @guard = 
-    new_color = []         
-    empty = ' '
-    o_rand = rand(1..6)
-
-    feed.each_with_index do |mark, ind|
-      reference.each_with_index do |number, pos| 
-        if mark == ColorsMarks::Mark['black']
-          new_color << number[ind].to_i
-        elsif mark == ColorsMarks::Mark['white']
-          new_color = number[o_rand].to_i
-        elsif mark == empty 
-          new_color << o_rand[pos].to_i
-        end
-      end
-    end                                 
-  end
-end
-
-
 class Computer < Player
 
   attr_reader :colors, :computer_colors
   include ColorsMarks 
-  include ColorsGenerator
 
   def initialize
     @computer_colors = Array.new
@@ -171,7 +159,7 @@ class Computer < Player
       first_guess_color.each {|col| computer_colors << col}
     else
       colors.split('').each do |col|
-        computer_colors << col #show_color(col)..............................
+        computer_colors << col #color_transform(col)..............................
       end
     end
     computer_colors
@@ -182,7 +170,7 @@ class Computer < Player
     first_guess = ''
 
     4.times { first_guess << rand(1..6).to_s } 
-    first_guess.split('').each { |val| computer_secret_code << val } #show_color(val)..............
+    first_guess.split('').each { |val| computer_secret_code << val } #color_transform(val)..............
     computer_secret_code
   end
 
@@ -318,10 +306,13 @@ class Main
     until turn == 2 || @winner 
         comp_colors = gets.chomp 
         computer_colors = @computer.enter_colors(comp_colors)
-puts 'COMPUT', computer_colors, show_color(computer_colors).join(' ')
-        feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
 
-        colors_generator = ColorsGenerator::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
+
+puts 'COMPUT', computer_colors, show_colors(color_transform(computer_colors))
+        feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+        
+
+        colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
 
       compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
       winner?(compare_winner)

@@ -93,7 +93,7 @@ module ColorsMarks
   end
 
   def show_colors(arr)
-    puts arr.join(' ')
+    arr.join(' ')
   end
 
   def self.colors_generator(feed, reference)  
@@ -120,25 +120,32 @@ end
 
 class Player 
 
-  attr_reader :player_colors
+  attr_reader :player_colors, :check
   include ColorsMarks
 
   def initialize 
     @player_colors = Array.new
+    @check = 'empty' 
   end
 
-  def enter_colors(color)
+  def enter_colors(color='')
     arr_colors = Array.new 
-  @player_colors = Array.new 
+    @player_colors = Array.new 
+    color = gets.chomp 
 
     color.split('').each { |num| arr_colors << num}
-    
     if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
       arr_colors.each { |val| @player_colors << val } # color_transform(val)...................
+      @check = 'exit'
     else 
       @player_colors << 'Insert 4 consecutive colors please... The numbers from 1 to 6'
     end
+    
     @player_colors 
+  end
+
+  def check_show # .........................
+    @check 
   end
 
 end
@@ -299,25 +306,20 @@ class Main
 
   def computer_game 
     turn = 0
-    color = gets.chomp
-    player_choose_colors = @player.enter_colors(color)
-    puts "PLAYER Colors: #{player_choose_colors.join(' ')}" 
+    until @player.check == 'exit'
+      player_choose_colors = @player.enter_colors()
+      puts "PLAYER Colors: #{show_colors(color_transform(player_choose_colors))}" 
+    end
     
     until turn == 2 || @winner 
         comp_colors = gets.chomp 
         computer_colors = @computer.enter_colors(comp_colors)
-
-
-puts 'COMPUT', computer_colors, show_colors(color_transform(computer_colors))
         feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
-        
-
         colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
-
-      compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
-      winner?(compare_winner)
-
-      puts "\nComputer: #{computer_colors.join(' ')} #{"Hits: |#{feedback.join('|')}|"}"
+        compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
+        winner?(compare_winner)
+        
+        puts "Computer: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
       turn += 1
     end
 

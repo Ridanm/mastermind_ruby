@@ -112,7 +112,8 @@ module ColorsMarks
           new_color << o_rand[pos].to_i
         end
       end
-    end                                 
+    end    
+    new_color                               
   end
 
 end
@@ -307,19 +308,17 @@ class Main
       if player_choose_colors.count != 4
         puts "PLAYER Colors: #{player_choose_colors.join(' ')}"
       else
-        puts "PLAYER Colors: ", show_colors(color_transform(player_choose_colors)) 
+        puts "\nPLAYER Colors:   #{show_colors(color_transform(player_choose_colors))}"
       end
     end
     
-    until turn == 2 || @winner 
-        comp_colors = gets.chomp 
-        computer_colors = @computer.enter_colors(comp_colors)
-        feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
-        colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
-        compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
-        winner?(compare_winner)
-        
-        puts "COMPUTER Colors: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
+    until turn == 12 || @winner 
+      computer_colors = @computer.enter_colors()
+      feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+      colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
+      compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
+      winner?(compare_winner)
+      puts "\nCOMPUTER Colors: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
       turn += 1
     end
 

@@ -88,7 +88,7 @@ module ColorsMarks
 
   def color_transform(color)
     getting_colors = Array.new
-    color.each { |num| getting_colors << Colors[num]}
+    color.each { |element| getting_colors << Colors[element]}
     getting_colors
   end
 
@@ -125,7 +125,7 @@ class Player
 
   def initialize 
     @player_colors = Array.new
-    @check = 'empty' 
+    @check = '' 
   end
 
   def enter_colors(color='')
@@ -133,19 +133,15 @@ class Player
     @player_colors = Array.new 
     color = gets.chomp 
 
-    color.split('').each { |num| arr_colors << num}
+    color.split('').each { |element| arr_colors << element}
     if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
-      arr_colors.each { |val| @player_colors << val } # color_transform(val)...................
+      arr_colors.each { |val| @player_colors << val }
       @check = 'exit'
     else 
       @player_colors << 'Insert 4 consecutive colors please... The numbers from 1 to 6'
     end
-    
-    @player_colors 
-  end
 
-  def check_show # .........................
-    @check 
+    @player_colors 
   end
 
 end
@@ -166,7 +162,7 @@ class Computer < Player
       first_guess_color.each {|col| computer_colors << col}
     else
       colors.split('').each do |col|
-        computer_colors << col #color_transform(col)..............................
+        computer_colors << col
       end
     end
     computer_colors
@@ -177,7 +173,7 @@ class Computer < Player
     first_guess = ''
 
     4.times { first_guess << rand(1..6).to_s } 
-    first_guess.split('').each { |val| computer_secret_code << val } #color_transform(val)..............
+    first_guess.split('').each { |val| computer_secret_code << val }
     computer_secret_code
   end
 
@@ -308,7 +304,11 @@ class Main
     turn = 0
     until @player.check == 'exit'
       player_choose_colors = @player.enter_colors()
-      puts "PLAYER Colors: #{show_colors(color_transform(player_choose_colors))}" 
+      if player_choose_colors.count != 4
+        puts "PLAYER Colors: #{player_choose_colors.join(' ')}"
+      else
+        puts "PLAYER Colors: ", show_colors(color_transform(player_choose_colors)) 
+      end
     end
     
     until turn == 2 || @winner 
@@ -319,7 +319,7 @@ class Main
         compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
         winner?(compare_winner)
         
-        puts "Computer: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
+        puts "COMPUTER Colors: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
       turn += 1
     end
 

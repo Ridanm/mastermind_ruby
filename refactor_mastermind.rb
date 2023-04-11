@@ -129,7 +129,7 @@ class Player
     @check = '' 
   end
 
-  def enter_colors(color='')
+  def enter_colors!(color='')
     arr_colors = Array.new 
     @player_colors = Array.new 
     color = gets.chomp 
@@ -157,25 +157,66 @@ class Computer < Player
     @computer_colors = Array.new
   end
 
-  def enter_colors(colors = '')
+  def enter_colors!(colors = '')
     computer_colors = Array.new 
     if colors == ''
-      first_guess_color.each {|col| computer_colors << col}
+      first_guess_color!.each {|col| computer_colors << col}
     else
-      colors.split('').each do |col|
+      colors.each do |col|
         computer_colors << col
       end
     end
     computer_colors
   end
 
-  def first_guess_color
+  def first_guess_color!
     computer_secret_code = Array.new
     first_guess = ''
 
     4.times { first_guess << rand(1..6).to_s } 
     first_guess.split('').each { |val| computer_secret_code << val }
     computer_secret_code
+  end
+
+  def feedback(codigo_azar, codigo_secreto)
+    white = Array.new(4) {''}
+    black = Array.new(4) {''}
+  
+    codigo_azar.each_with_index do |code, ind|
+        if code == codigo_secreto[ind]
+          black[ind] << code
+        elsif codigo_secreto.include?(code)
+          white[ind] << "it's include"
+        elsif code != codigo_secreto[ind]
+          white[ind] << "not include"
+        end
+      end
+  
+    return white, black
+  end 
+
+  def order_colors(white_arr, black_arr, guess)
+    sort_colors = black_arr 
+    include_color = []
+    not_included = []
+    all_elements = (1..6).to_a 
+    posibles_numeros = guess 
+  
+    if black_arr.include?('') 
+      sort_colors.each_with_index do |elem, ind|
+        if elem == ''
+          white_arr.each_with_index do |white_elem, pos|
+            if white_elem == 'include' 
+              sort_colors << posibles_numeros[ind] 
+            elsif white_elem == 'not include'
+              add_new_num =  all_elements.sample.to_s 
+              sort_colors[ind] = add_new_num
+            end
+          end
+        end
+      end
+    end
+    sort_colors
   end
 
 end
@@ -304,7 +345,7 @@ class Main
   def computer_game 
     turn = 0
     until @player.check == 'exit'
-      player_choose_colors = @player.enter_colors()
+      player_choose_colors = @player.enter_colors!()
       if player_choose_colors.count != 4
         puts "PLAYER Colors: #{player_choose_colors.join(' ')}"
       else
@@ -312,8 +353,9 @@ class Main
       end
     end
     
+      first_color = @computer.enter_colors!()
     until turn == 12 || @winner 
-      computer_colors = @computer.enter_colors()
+      computer_colors = @computer.enter_colors!(first_color)
       feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
       colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
       compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
@@ -331,13 +373,13 @@ class Main
 
   def player_game
     turn = 0
-    computer_first_guess = @computer.first_guess_color
+    computer_first_guess = @computer.first_guess_color!
     puts computer_first_guess.join(' ') #DELETE.......PUTS
 
     until turn == 12 || @winner 
       print " \n#{@chance} opportunities, enter colors: "
       colors = gets.chomp
-      @player.enter_colors(colors)
+      @player.enter_colors!(colors)
       puts "Player: #{@player.player_colors.join(' ')} >> Feedback |#{@feedback.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
 
       winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))

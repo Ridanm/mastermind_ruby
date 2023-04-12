@@ -343,7 +343,7 @@ class Main
   #    in which case the game ends.
 
   def computer_game 
-    turn = 0
+    @turn = 0
     until @player.check == 'exit'
       player_choose_colors = @player.enter_colors!()
       if player_choose_colors.count != 4
@@ -353,44 +353,55 @@ class Main
       end
     end
     
-      first_color = @computer.enter_colors!()
-    until turn == 12 || @winner 
-      computer_colors = @computer.enter_colors!(first_color)
-      feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
-      colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
-      compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
-      winner?(compare_winner)
-      puts "\nCOMPUTER Colors: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
-      turn += 1
-    end
+    #   first_color = @computer.enter_colors!()
+    # until @turn == 12 || @winner 
+    #   computer_colors = @computer.enter_colors!(first_color)
+    #   feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
+    #   colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
+    #   compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
+    #   winner?(compare_winner)
+    #   puts "\nCOMPUTER Colors: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
+    #   @turn += 1
+    # end
 
-    if turn >= 12 
-      puts "\n  Congratulations you have won...\n  the code could not be broken."
-    else 
-      puts "\n  The code has broken...\n  Play again write yes..." # IMPLEMENT THIS...........
+
+    computer_colors = @computer.enter_colors!() 
+    p computer_colors
+    until @turn == 12 || @winner == true 
+      white_black = @computer.feedback(computer_colors, player_choose_colors)
+      white = white_black[0]
+      black = white_black[1]
+
+      sort_colors = @computer.order_colors(white, black, computer_colors)
+
+      winner?(@compare.verifier_guess(sort_colors, player_choose_colors))
+      computer_colors = sort_colors
+
+      puts "\nComputer: #{show_colors(color_transform(sort_colors))} Feedback: "
+      @turn += 1
     end
   end
 
   def player_game
-    turn = 0
+    @turn = 0
     computer_first_guess = @computer.first_guess_color!
     puts computer_first_guess.join(' ') #DELETE.......PUTS
 
-    until turn == 12 || @winner 
+    until @turn == 12 || @winner 
       print " \n#{@chance} opportunities, enter colors: "
       colors = gets.chomp
       @player.enter_colors!(colors)
       puts "Player: #{@player.player_colors.join(' ')} >> Feedback |#{@feedback.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
 
       winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
-      turn += 1
+      @turn += 1
       @chance -= 1
     end
   end
 
   def winner?(win)
     if win
-      puts "\nThe code has been discovered !!!"
+      puts "\nThe code has been discovered in #{@turn} turns!!!"
       puts "Play again write yes..."  # IMPLEMENT THIS........
       @winner = true
       return 

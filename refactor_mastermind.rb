@@ -197,8 +197,6 @@ class Computer < Player
 
   def order_colors(white_arr, black_arr, guess)
     sort_colors = black_arr 
-    include_color = []
-    not_included = []
     all_elements = (1..6).to_a 
     posibles_numeros = guess 
   
@@ -380,6 +378,8 @@ class Main
       puts "\nComputer: #{show_colors(color_transform(sort_colors))} Feedback: "
       @turn += 1
     end
+
+    puts "\nCode no broken... Play again write yes..." if @turn >= 12
   end
 
   def player_game
@@ -402,7 +402,6 @@ class Main
   def winner?(win)
     if win
       puts "\nThe code has been discovered in #{@turn} turns!!!"
-      puts "Play again write yes..."  # IMPLEMENT THIS........
       @winner = true
       return 
     end

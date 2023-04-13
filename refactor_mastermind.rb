@@ -10,7 +10,7 @@
 #    debe crear un código al azar 
 #    de 4 dígitos para comparar con 
 #    el código  del jugador. 
-# 3- Feedback
+# 3- Hint
 #    Se debe dar retroalimentación de 
 #    la comparación de los códigos 
 #    Es decir graficar: los aciertos, 
@@ -209,6 +209,9 @@ class Computer < Player
             elsif white_elem == 'not include'
               add_new_num =  all_elements.sample.to_s 
               sort_colors[ind] = add_new_num
+            elsif white_elem == ''
+              add_num = all_elements.sample.to_s 
+              sort_colors[ind] = add_num
             end
           end
         end
@@ -234,14 +237,14 @@ class CheckWinner
 end
 
 
-class Feedback
+class Hint
 
   def initialize(player, compare)
     @player = player
     @compare = compare
   end
 
-    # Feedback mediante el array de colores
+    # Hint mediante el array de colores
     # separa cada dato split().
     # Recorrerlo con each_with 
     # dato he indice.
@@ -281,7 +284,7 @@ class Presentation
 
   1: Guess the secret 4 color code created by the computer...
      You have 12 turns to crack the seecret code.
-     Feedback: O white the color is in the wrong place
+     Hint: O white the color is in the wrong place
                O black the color and place is correct 
                space the color is not found in the code to guess
 
@@ -314,11 +317,11 @@ class Main
   attr_reader :colors, :player, :computer
   include ColorsMarks 
 
-  def initialize(player, computer, compare, feedback, presentation) 
+  def initialize(player, computer, compare, hint, presentation) 
     @player = player 
     @computer = computer
     @compare = compare 
-    @feedback = feedback 
+    @hint = hint 
     @presentation = presentation 
     @colors = Array.new 
     @winner = false
@@ -335,7 +338,7 @@ class Main
   # computer_game
   # 1- The computer must be abble to choose four colors to compare whith the opponent's colors.
   # 2- Check the colors and they matches, winner_verifier
-  # 3- Based on the feedback return another color code.
+  # 3- Based on the hint return another color code.
   #  - Compare if there is a winner 
   # 4- The computer's turns must increase or decrease until the 12 turns are completed, 
   #    in which case the game ends.
@@ -348,23 +351,11 @@ class Main
         puts "PLAYER Colors: #{player_choose_colors.join(' ')}"
       else
         puts "\nPLAYER Colors:   #{show_colors(color_transform(player_choose_colors))}"
+        puts 
       end
     end
     
-    #   first_color = @computer.enter_colors!()
-    # until @turn == 12 || @winner 
-    #   computer_colors = @computer.enter_colors!(first_color)
-    #   feedback = @feedback.feedback_colors(player_choose_colors, computer_colors)
-    #   colors_generator = ColorsMarks::colors_generator(feedback, computer_colors) # CORRECT THiSs.............
-    #   compare_winner = @compare.verifier_guess(player_choose_colors, computer_colors)
-    #   winner?(compare_winner)
-    #   puts "\nCOMPUTER Colors: #{show_colors(color_transform(computer_colors))} Hits: |#{feedback.join('|')}|"
-    #   @turn += 1
-    # end
-
-
     computer_colors = @computer.enter_colors!() 
-    p computer_colors
     until @turn == 12 || @winner == true 
       white_black = @computer.feedback(computer_colors, player_choose_colors)
       white = white_black[0]
@@ -375,7 +366,7 @@ class Main
       winner?(@compare.verifier_guess(sort_colors, player_choose_colors))
       computer_colors = sort_colors
 
-      puts "\nComputer: #{show_colors(color_transform(sort_colors))} Feedback: "
+      puts "\nComputer Colors: #{show_colors(color_transform(sort_colors))} Hint: |#{@hint.feedback_colors(sort_colors, player_choose_colors).join('|')}|"
       @turn += 1
     end
 
@@ -391,8 +382,7 @@ class Main
       print " \n#{@chance} opportunities, enter colors: "
       colors = gets.chomp
       @player.enter_colors!(colors)
-      puts "Player: #{@player.player_colors.join(' ')} >> Feedback |#{@feedback.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
-
+      puts "Player: #{@player.player_colors.join(' ')} >> Hint |#{@hint.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
       winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       @turn += 1
       @chance -= 1
@@ -440,8 +430,8 @@ presentation = Presentation.new
 player = Player.new
 computer = Computer.new 
 guess_compare = CheckWinner.new(player,computer)
-feedback = Feedback.new(player, computer)
+hint = Hint.new(player, computer)
 
 presentation.headoard
-main = Main.new(player, computer, guess_compare, feedback, presentation)
+main = Main.new(player, computer, guess_compare, hint, presentation)
 main.play 

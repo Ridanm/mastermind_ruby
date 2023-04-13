@@ -88,7 +88,7 @@ module ColorsMarks
 
   def color_transform(color)
     getting_colors = Array.new
-    color.each { |element| getting_colors << Colors[element]}
+    color.each { |element| getting_colors << Colors[element] ||= getting_colors << element}
     getting_colors
   end
 
@@ -309,6 +309,16 @@ class Presentation
   each number corresponding to its color."
   end
 
+  def end_of_game 
+    puts "\nPlay again write yes..."
+    @play_again = gets().chomp.downcase
+    if @play_again == 'yes'
+      play_again
+    else 
+      puts 'Thak for playing, we hope to see you again bye'
+    end
+  end
+
 end
 
 
@@ -370,7 +380,7 @@ class Main
       @turn += 1
     end
 
-    puts "\nCode no broken... Play again write yes..." if @turn >= 12
+    @presentation.end_of_game if @turn >= 12 || @winner == true 
   end
 
   def player_game
@@ -381,12 +391,14 @@ class Main
       @turn += 1
       print " \n#{@chance} turns left, enter colors: "
       enter_colors = @player.enter_colors!(colors)
+      p enter_colors 
+      p color_transform(enter_colors)
       puts "Player: #{show_colors(color_transform(enter_colors))} >> Hint |#{@hint.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
       winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       @chance -= 1
     end
 
-    puts "\nCode no broken... Play again write yes..." if @turn >= 12
+    @presentation.end_of_game if @turn >= 12 || @winner == true 
   end
 
   def winner?(win)
@@ -406,7 +418,7 @@ class Main
     end
     
     if select == 'exit'
-      puts 'Thaks for your visit...'
+      puts 'Thak for your visit...'
       exit
     else
       if select == '1'
@@ -426,12 +438,16 @@ class Main
 end
 
 
-presentation = Presentation.new 
-player = Player.new
-computer = Computer.new 
-guess_compare = CheckWinner.new(player,computer)
-hint = Hint.new(player, computer)
+def play_again
+  presentation = Presentation.new 
+  player = Player.new
+  computer = Computer.new 
+  guess_compare = CheckWinner.new(player,computer)
+  hint = Hint.new(player, computer)
 
-presentation.headoard
-main = Main.new(player, computer, guess_compare, hint, presentation)
-main.play 
+  presentation.headoard
+  main = Main.new(player, computer, guess_compare, hint, presentation)
+  main.play 
+end 
+
+play_again

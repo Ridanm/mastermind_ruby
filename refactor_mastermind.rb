@@ -326,6 +326,7 @@ class Main
     @colors = Array.new 
     @winner = false
     @chance = 12
+    @turn = 0
   end
 
   def all_colors
@@ -344,7 +345,6 @@ class Main
   #    in which case the game ends.
 
   def computer_game 
-    @turn = 0
     until @player.check == 'exit'
       player_choose_colors = @player.enter_colors!()
       if player_choose_colors.count != 4
@@ -366,7 +366,7 @@ class Main
       winner?(@compare.verifier_guess(sort_colors, player_choose_colors))
       computer_colors = sort_colors
 
-      puts "\nComputer Colors: #{show_colors(color_transform(sort_colors))} Hint: |#{@hint.feedback_colors(sort_colors, player_choose_colors).join('|')}|"
+      puts "\nComputer Colors: #{show_colors(color_transform(sort_colors))} >> Hint: |#{@hint.feedback_colors(sort_colors, player_choose_colors).join('|')}|"
       @turn += 1
     end
 
@@ -374,19 +374,19 @@ class Main
   end
 
   def player_game
-    @turn = 0
     computer_first_guess = @computer.first_guess_color!
     puts computer_first_guess.join(' ') #DELETE.......PUTS
 
     until @turn == 12 || @winner 
-      print " \n#{@chance} opportunities, enter colors: "
-      colors = gets.chomp
-      @player.enter_colors!(colors)
-      puts "Player: #{@player.player_colors.join(' ')} >> Hint |#{@hint.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
-      winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       @turn += 1
+      print " \n#{@chance} turns left, enter colors: "
+      enter_colors = @player.enter_colors!(colors)
+      puts "Player: #{show_colors(color_transform(enter_colors))} >> Hint |#{@hint.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
+      winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       @chance -= 1
     end
+
+    puts "\nCode no broken... Play again write yes..." if @turn >= 12
   end
 
   def winner?(win)

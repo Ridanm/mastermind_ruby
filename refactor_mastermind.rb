@@ -73,8 +73,8 @@ module ColorsMarks
   }
 
   Mark = {
-    'black' => 'O'.colorize(:color => :light_black),
-    'white' => 'O'.colorize(:color => :white)
+    'black' => ' O '.colorize(:color => :black, :background => :white),
+    'white' => ' O '.colorize(:color => :white, :background => :black)
   }
 
   def self.title(text)
@@ -129,17 +129,20 @@ class Player
     @check = '' 
   end
 
-  def enter_colors!(color='')
+  def enter_colors!
     arr_colors = Array.new 
     @player_colors = Array.new 
     color = gets.chomp 
 
     color.split('').each { |element| arr_colors << element}
+
     if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
       arr_colors.each { |val| @player_colors << val }
       @check = 'exit'
     else 
-      @player_colors << 'Insert 4 consecutive colors please... The numbers from 1 to 6'
+      msj = 'Insert four consecutive colors please... The numbers from 1 to 6'
+      puts "\n#{msj}".colorize(:color => :light_red)
+      enter_colors!()
     end
 
     @player_colors 
@@ -276,17 +279,19 @@ end
 class Presentation
 
   HEAD = 'WELCOME TO MASTERMIND'
+  o_white = ' O '.colorize(:color => :white, :background => :black)
+  o_black = ' O '.colorize(:color => :black, :background => :white)
 
   MSJ = %Q(
   In this game you can choose guess the code or create the code 
   Enter number : 1 to guess the code 
   or           : 2 to create the code 
-
+  
   1: Guess the secret 4 color code created by the computer...
      You have 12 turns to crack the seecret code.
-     Hint: O white the color is in the wrong place
-               O black the color and place is correct 
-               space the color is not found in the code to guess
+     Hint: #{o_white} white the color is in the wrong place
+           #{o_black} black the color and place is correct 
+            space the color is not found in the code to guess
 
   2: Create enter 4 consecutive numbers from 1 to 6,
      each number corresponding to its color.
@@ -310,12 +315,12 @@ class Presentation
   end
 
   def end_of_game 
-    puts "\nPlay again write yes..."
+    puts "\nPlay again write yes...".colorize(:color => :green)
     @play_again = gets().chomp.downcase
     if @play_again == 'yes'
       play_again
     else 
-      puts 'Thak for playing, we hope to see you again bye'
+      puts "Thak for playing, we hope to see you again bye".colorize(:color => :green)
     end
   end
 
@@ -367,6 +372,7 @@ class Main
     
     computer_colors = @computer.enter_colors!() 
     until @turn == 12 || @winner == true 
+      @turn += 1
       white_black = @computer.feedback(computer_colors, player_choose_colors)
       white = white_black[0]
       black = white_black[1]
@@ -377,7 +383,6 @@ class Main
       computer_colors = sort_colors
 
       puts "\nComputer Colors: #{show_colors(color_transform(sort_colors))} >> Hint: |#{@hint.feedback_colors(sort_colors, player_choose_colors).join('|')}|"
-      @turn += 1
     end
 
     @presentation.end_of_game if @turn >= 12 || @winner == true 
@@ -390,9 +395,7 @@ class Main
     until @turn == 12 || @winner 
       @turn += 1
       print " \n#{@chance} turns left, enter colors: "
-      enter_colors = @player.enter_colors!(colors)
-      p enter_colors 
-      p color_transform(enter_colors)
+      enter_colors = @player.enter_colors!
       puts "Player: #{show_colors(color_transform(enter_colors))} >> Hint |#{@hint.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
       winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       @chance -= 1
@@ -403,7 +406,7 @@ class Main
 
   def winner?(win)
     if win
-      puts "\nThe code has been discovered in #{@turn} turns!!!"
+      puts "\nThe code has been discovered in #{@turn} turns!!!".colorize(:color => :green)
       @winner = true
       return 
     end

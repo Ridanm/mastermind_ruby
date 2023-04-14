@@ -315,12 +315,13 @@ class Presentation
   end
 
   def end_of_game 
-    puts "\nPlay again write yes...".colorize(:color => :green)
+    puts "\nGame over, play again type yes or any key to close...".colorize(:color => :green)
     @play_again = gets().chomp.downcase
     if @play_again == 'yes'
       play_again
     else 
-      puts "Thak for playing, we hope to see you again bye".colorize(:color => :green)
+      puts "Thak for playing, we hope to see you again".colorize(:color => :green)
+      puts "Report bugs failures or possibble improvements, contact: danyfox1.dm@gmail.com".colorize(:color => :green)
     end
   end
 
@@ -390,7 +391,7 @@ class Main
 
   def player_game
     computer_first_guess = @computer.first_guess_color!
-    puts computer_first_guess.join(' ') #DELETE.......PUTS
+    
 
     until @turn == 12 || @winner 
       @turn += 1
@@ -408,7 +409,6 @@ class Main
     if win
       puts "\nThe code has been discovered in #{@turn} turns!!!".colorize(:color => :green)
       @winner = true
-      return 
     end
   end
 

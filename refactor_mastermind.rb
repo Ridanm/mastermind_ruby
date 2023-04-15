@@ -77,6 +77,19 @@ module ColorsMarks
     'white' => ' O '.colorize(:color => :white, :background => :black)
   }
 
+  def self.text_color(clave, msj)
+    {
+      'red' => msj.colorize(:color => :red),
+      'yellow' => msj.colorize(:color => :yellow),
+      'blue' => msj.colorize(:color => :blue), 
+      'cyan' => msj.colorize(:color => :cyan),
+      'green' => msj.colorize(:color => :green), 
+      'magenta' => msj.colorize(:color => :magenta),
+      'white' => msj.colorize(:color => :white, :background => :black), 
+      'black' => msj.colorize(:color => :black, :background => :white)
+    }[clave]
+  end
+
   def self.title(text)
     lines = '-' * text.size 
     puts "#{lines}\n#{text}\n#{lines}"
@@ -116,6 +129,12 @@ module ColorsMarks
     new_color                               
   end
 
+  def self.leave_game
+    close_msj = 'Thak for your visit...'
+      puts ColorsMarks.text_color('green', close_msj)
+      exit
+  end
+
 end
 
 
@@ -136,13 +155,17 @@ class Player
 
     color.split('').each { |element| arr_colors << element}
 
-    if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
-      arr_colors.each { |val| @player_colors << val }
-      @check = 'exit'
-    else 
-      msj = 'Insert four consecutive colors please... The numbers from 1 to 6'
-      puts "\n#{msj}".colorize(:color => :light_red)
-      enter_colors!()
+    if color == 'exit'
+      ColorsMarks.leave_game
+    else
+      if arr_colors.count == 4 && arr_colors.all? { |elem| elem.to_i.between?(1, 6) }
+        arr_colors.each { |val| @player_colors << val }
+        @check = 'exit'
+      else 
+        msj = 'Insert four consecutive colors please... The numbers from 1 to 6'
+        puts "\n#{msj}".colorize(:color => :light_red)
+        enter_colors!()
+      end
     end
 
     @player_colors 
@@ -267,10 +290,10 @@ class Hint
       elsif to_compare.include?(data)
         back << ColorsMarks::Mark['white']
       else 
-        back << ' '
+        back << '   '
       end
     end
-    back
+    back 
   end
 
 end
@@ -278,9 +301,11 @@ end
 
 class Presentation
 
-  HEAD = 'WELCOME TO MASTERMIND'
-  o_white = ' O '.colorize(:color => :white, :background => :black)
-  o_black = ' O '.colorize(:color => :black, :background => :white)
+  include ColorsMarks
+
+  HEAD = ColorsMarks.text_color('green', 'WELCOME TO MASTERMIND')
+  o_white = ColorsMarks.text_color('white', ' O ')
+  o_black = ColorsMarks.text_color('black', ' O ')
 
   MSJ = %Q(
   In this game you can choose guess the code or create the code 
@@ -308,20 +333,35 @@ class Presentation
     title(HEAD, MSJ) 
   end
 
+  def show_option_one
+    option_one = <<-HEREDOC
+
+    Player: Guess the secret code...
+    Enter 4 consecutive numbers from 1 to 6 to select colors."
+    HEREDOC
+  end
+
   def show_option_two
-    puts "\n  You have chosen option number 2, 
-  enter 4 numbers form 1 to 6, 
-  each number corresponding to its color."
+    option_two = <<-HEREDOC 
+
+    You have chosen option number 2, 
+    enter 4 numbers form 1 to 6, 
+    each number corresponding to its color."
+    HEREDOC
   end
 
   def end_of_game 
-    puts "\nGame over, play again type yes or any key to close...".colorize(:color => :green)
+    game_over = "\nGame over, play again type yes or any key to close..."
+    thanks = "Thak for playing, we hope to see you again"
+    report_bugs = "Report bugs failures or possibble improvements, contact: danyfox1.dm@gmail.com"
+
+    puts ColorsMarks.text_color('green', game_over)
     @play_again = gets().chomp.downcase
     if @play_again == 'yes'
       play_again
     else 
-      puts "Thak for playing, we hope to see you again".colorize(:color => :green)
-      puts "Report bugs failures or possibble improvements, contact: danyfox1.dm@gmail.com".colorize(:color => :green)
+      puts ColorsMarks.text_color('green', thanks)
+      puts ColorsMarks.text_color('green', report_bugs)
     end
   end
 
@@ -379,11 +419,10 @@ class Main
       black = white_black[1]
 
       sort_colors = @computer.order_colors(white, black, computer_colors)
-
       winner?(@compare.verifier_guess(sort_colors, player_choose_colors))
       computer_colors = sort_colors
-
-      puts "\nComputer Colors: #{show_colors(color_transform(sort_colors))} >> Hint: |#{@hint.feedback_colors(sort_colors, player_choose_colors).join('|')}|"
+      puts "\nComputer Colors: #{show_colors(color_transform(sort_colors))} " +
+           " >> Hint: |#{@hint.feedback_colors(sort_colors, player_choose_colors).join('|')}|"
     end
 
     @presentation.end_of_game if @turn >= 12 || @winner == true 
@@ -391,13 +430,12 @@ class Main
 
   def player_game
     computer_first_guess = @computer.first_guess_color!
-    
-
     until @turn == 12 || @winner 
       @turn += 1
       print " \n#{@chance} turns left, enter colors: "
       enter_colors = @player.enter_colors!
-      puts "Player: #{show_colors(color_transform(enter_colors))} >> Hint |#{@hint.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
+      puts "Player: #{show_colors(color_transform(enter_colors))} " +
+           " >> Hint |#{@hint.feedback_colors(computer_first_guess, @player.player_colors).join('|')}|"
       winner?(@compare.verifier_guess(computer_first_guess.join(' '), @player.player_colors.join(' ')))
       @chance -= 1
     end
@@ -407,7 +445,8 @@ class Main
 
   def winner?(win)
     if win
-      puts "\nThe code has been discovered in #{@turn} turns!!!".colorize(:color => :green)
+      discover = "\nThe code has been discovered in #{@turn} turns!!!"
+      puts ColorsMarks.text_color('green', discover)
       @winner = true
     end
   end
@@ -421,17 +460,15 @@ class Main
     end
     
     if select == 'exit'
-      puts 'Thak for your visit...'
-      exit
+      ColorsMarks.leave_game
     else
       if select == '1'
-        puts "\nPlayer: Guess the secret code...
-        Enter 4 consecutive numbers from 1 to 6 to select colors."
+        puts ColorsMarks.text_color('green', @presentation.show_option_one)
         all_colors
         player_game 
       elsif select == '2'
         all_colors
-        @presentation.show_option_two
+        puts ColorsMarks.text_color('green', @presentation.show_option_two)
         print "\nEnter secret code: "
         computer_game 
       end
